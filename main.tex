@@ -1,0 +1,57 @@
+\newif\ifFullVersion
+\FullVersiontrue
+\ifFullVersion
+    \documentclass[orivec]{llncs}
+    \usepackage{geometry}
+    \geometry{
+        a4paper,         % or letterpaper
+        textwidth=16.5cm,  % llncs has 12.2cm
+        textheight=24cm, % llncs has 19.3cm
+        hratio=1:1,      % horizontally centered
+        vratio=2:3,      % not vertically centered
+        heightrounded
+    }   
+\else
+    \documentclass[runningheads,orivec]{llncs}
+
+\fi
+
+% Packages and macros----------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{orcidlink}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+\usepackage{tikz} %\usetikzlibrary{positioning,shapes.misc, arrows.meta}
+
+\usepackage{hyperref}
+\usepackage{color}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+\urlstyle{rm}
+
+\usepackage{cleveref}
+\input{macro}
+%--------------------------------------------------------------------------------
+\begin{document}
+
+% Meta Info
+\title{Perspectives of Convolution and NTT under Prime Power Moduli}
+\author{Yimeng He \inst{1}}
+\authorrunning{Y. He et al.}
+\institute{Nanyang Technological University, 50 Nanyang Ave, Singapore \\ \email{yimeng002@e.ntu.edu.sg}}
+
+\maketitle
+\input{abstract}
+\input{introduction}
+\input{related_work}
+
+%\bibliographystyle{splncs04}
+%\bibliography{ref.bib}
+\end{document}
