@@ -18,10 +18,11 @@
 
 % Packages and macros----------------------------------------------------------------------
 \usepackage[T1]{fontenc}
+\usepackage{url}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{graphicx}
 \usepackage{orcidlink}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,mathtools}
 \usepackage{bm}
 
 \usepackage{algorithm}
@@ -35,6 +36,11 @@
 \usepackage{color}
 \renewcommand\UrlFont{\color{blue}\rmfamily}
 \urlstyle{rm}
+
+\ifFullVersion
+    \let\proof\relax\let\endproof\relax
+    \usepackage{amsthm}
+\fi
 
 \usepackage{cleveref}
 \input{macro}
@@ -51,7 +57,8 @@
 \input{abstract}
 \input{introduction}
 \input{related_work}
+\input{section_roots}
 
-%\bibliographystyle{splncs04}
-%\bibliography{ref.bib}
+\bibliographystyle{splncs04}
+\bibliography{ref.bib}
 \end{document}
