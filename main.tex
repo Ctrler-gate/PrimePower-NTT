@@ -1,7 +1,7 @@
 \newif\ifFullVersion
 \FullVersiontrue
 \ifFullVersion
-    \documentclass[orivec]{llncs}
+    \documentclass[orivec,runningheads]{llncs}
     \usepackage{geometry}
     \geometry{
         a4paper,         % or letterpaper
@@ -13,11 +13,13 @@
     }   
 \else
     \documentclass[runningheads,orivec]{llncs}
+    \pagestyle{plain}
 
 \fi
 
 % Packages and macros----------------------------------------------------------------------
 \usepackage[T1]{fontenc}
+\usepackage{appendix}
 \usepackage{url}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{graphicx}
@@ -37,28 +39,43 @@
 \renewcommand\UrlFont{\color{blue}\rmfamily}
 \urlstyle{rm}
 
-\ifFullVersion
-    \let\proof\relax\let\endproof\relax
-    \usepackage{amsthm}
-\fi
-
+\let\proof\relax\let\endproof\relax
+\usepackage{amsthm}
 \usepackage{cleveref}
+
+\spnewtheorem{ext_proof}{Proof}{\itshape}{\normalfont}
+\crefformat{ext_proof}{proof~#2#1#3}
+\Crefformat{ext_proof}{Proof~#2#1#3}
 \input{macro}
 %--------------------------------------------------------------------------------
 \begin{document}
 
-% Meta Info
-\title{Perspectives of Convolution and NTT under Prime Power Moduli}
-\author{Yimeng He \inst{1}}
-\authorrunning{Y. He et al.}
-\institute{Nanyang Technological University, 50 Nanyang Ave, Singapore \\ \email{yimeng002@e.ntu.edu.sg}}
+\ifFullVersion
+    % Meta Info
+    \title{Perspectives of Convolution and NTT under Prime Power Moduli}
+    \author{Yimeng He \inst{1}}
+    \authorrunning{Y. He et al.}
+    \institute{Nanyang Technological University, 50 Nanyang Ave, Singapore \\ \email{yimeng002@e.ntu.edu.sg}}
+    \maketitle
+\else
+    % Title
+    \begin{center}
+        \Large\bfseries
+        Perspectives of Convolution and NTT under Prime Power Moduli
+    \end{center}
+\fi
 
-\maketitle
 \input{abstract}
 \input{introduction}
 \input{related_work}
 \input{section_roots}
+\input{section_padding}
 
 \bibliographystyle{splncs04}
 \bibliography{ref.bib}
+\ifFullVersion
+\else
+\appendix
+\input{appendix}
+\fi
 \end{document}

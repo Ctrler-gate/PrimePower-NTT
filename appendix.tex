@@ -1,0 +1,40 @@
+%!TEX root=main.tex
+\clearpage\section*{Appendix}
+\paragraph{\bf Proof of Claim in \cref{prop:LiftedPrimPoly}}
+\(\exists h(x):\: (x^k - 1)h(x) \equiv 1 \pmod{p^m, f_m(x)}\)
+\begin{ext_proof}\label{proof:LiftedPrimPoly}
+    Since \(0 < k < N\), \(x^k - 1 \pmod{p, f(x)}\) is nonzero and has a multiplicative inverse \(h_1(x)\), i.e., \((x^k - 1)h_1(x) \equiv 1 \pmod{p, f_m(x)}\) (recall that \(\Z[x]/(p, f(x)) = \Z[x]/(p, f_m(x))\) is a field). We are going to lift the inverse \(\bmod \  p\) to one \(\bmod \  p^m\). To do so it is most convenient to employ a technique known as Newton-Raphson division~\cite{MISC:WikiNewton}
+
+    \smallskip
+    \noindent{\bf Newton-Rhaphson division: }Let \(l > 0\). Suppose \(\exists h_l(x)\) s.t. \((x^k - 1)h_l(x) \equiv 1 \pmod{p^l, f_m(x)}\). Define
+    \[h_{l+1}(x) = 2 h_l(x) - (x^k - 1)h_l(x)^2\]
+    Then \((x^k - 1)h_{l+1}(x) \equiv 1 \pmod{p^{l+1}, f_m(x)}\)
+
+    \noindent\emph{proof of lifting} \quad Write \((x^k - 1)h_l(x) = 1 = p^l M_l(x) + f_m(x) N_l(x)\) for some polynomials \(M_l(x), N_l(x)\). Then
+    \begin{align*}
+        &(x^k - 1)^2h_l(x)^2 = 1 + 2p^l M_l(x) + p^{l+1}(p^{l-1}M_l(x)^2) + f_m(x)\left(f_m(x) N_l(x)^2  \right.\\
+        &\left. + 2 N_l(x) (1 + p^l M_l(x)) \right) \\
+        &2(x^k - 1)h_l(x) = 2 + 2p^l M_l(x) + f_m(x) N_l(x) \\
+        \implies &(x^k - 1)h_{l+1}(x) = 1 + p^{l+1} M_{l+1}(x) + f_m(x) N_{l+1}(x)
+    \end{align*}
+    for some polynomials \(M_{l+1}(x), N_{l+1}(x)\). Therefore we can use Newton-Rhaphson division to lift the inverse up to \(\bmod \  p^m\). This shows that \(x^k - 1\) and the claim is proven. \hfill \qed
+\end{ext_proof}
+
+\paragraph{\bf Proof of \cref{prop:LiftPrimOnly}}
+\begin{ext_proof}\label{proof:LiftPrimOnly} 
+    Let \(\mathcal{Z}_p\) be the ring of p-adic integers and \(\mathcal{Q}_p\) the field of p-adic rationals. Since \(M\) is coprime to \(p\) the polynomial \(x^M - 1\) has \(M\) distinct roots of unity over an extension field of \(\mathcal{Q}_p\).
+
+    By Hensel Lifting Lemma~\cref{thm:HenselLifting}, there exists \(f_{k+1}(x), g(x) \in \Z[x]\) such that \(f_{k+1}(x) \mid x^M - 1\) over \(\Z_{p^{k+1}}[x]\) and \(f_{k+1}(x) \equiv f_k(x) + p^k g(x) \pmod{p^{k+1}}\). Therefore item 1 and 2 of \cref{prop:LiftPrimOnly} are immediate, and it remains to show item 3.
+
+    Moreover, if \(\alpha_k\) is a root of \(f_k(x)\) over \(\Z_{p^k}\), namely \(f_k(\alpha_k) \equiv 0 \pmod{p^k}\). There would exist a root \(\alpha_{k+1} = \alpha_k + p^k \delta\), where \(\delta\) lies in an extension field of \(\mathcal{Q}_p\), of \(f_{k+1}(x)\) over \(\Z_{p^{k+1}}\). In other words, \(f_{k+1}(\alpha_{k+1}) \equiv 0 \pmod{p^{k+1}}\).
+
+    Since \(f_k(x) \mid x^M - 1\) over \(\Z_{p^k}[x]\), there exists an \(\epsilon\) in an extension field of \(\mathcal{Q}_p\) such that \(\alpha_k^M = 1 + p^k \epsilon\). Because
+    \begin{align*}
+        &\alpha_{k+1}^p = (\alpha_k + p^k \delta)^p = \alpha_k^p + O(p^{k+1}) \equiv \alpha_k^p \pmod{p^{k+1}} \\
+        &\alpha_{k+1}^{pM} = (\alpha_k + p^k \delta)^{pM} = \alpha_k^{pM} + O(p^{k+1}) = (1 + p^k \epsilon)^p + O(p^{k+1}) \\
+        &= 1 + O(p^{k+1}) \equiv 1 \pmod{p^{k+1}}
+    \end{align*}
+    Hence the \(p\textsuperscript{th}\) power of distinct roots \(\alpha_k\) of \(f_k(x)\) over \(\Z_{p^k}\) are all distinct roots of \(x^M - 1\) over \(\Z_{p^{k+1}}\). In addition, \(\alpha_{k+1}^p \equiv \alpha_k^p \equiv \alpha_k \pmod{p}\), and we must therefore have \(f_k(\alpha_k^p) \equiv 0 \pmod{p^k}\).
+
+    The roots of \(f_{k+1}\) over \(\Z_{p^{k+1}}\) are, up to \(\bmod \  p^{k+1}\) the \(p\textsuperscript{th}\) power of all the roots of \(f_k(x)\) over \(\Z_{p^k}\). Therefore item 3 is proven. \hfill \qed
+\end{ext_proof}

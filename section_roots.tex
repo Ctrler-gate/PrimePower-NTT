@@ -1,5 +1,5 @@
 %!TEX root = main.tex
-\section{On roots of unity}
+\section{On Roots of Unity} \label{section:roots}
 Whether NTT or FFT, all fourier transform related algorithms require certain roots of unity. Suppose we need to compute the fourier transform of \(N\) data points, we generally need \(N\) distinct roots of unity, but the nature of these roots depends on context.
 
 In scientific computations, data are real/complex numbers in general. The \(N\) roots of unity are usually taken to be the evenly-spaced points on the complex unit circle \(0 \le k < N:\: \zeta^k \coloneq \exp{(\frac{2 \pi i k}{N})}\).
@@ -24,7 +24,7 @@ On close inspection, the non-invertibility of \(\bm{V}\) is the only obstruction
 \begin{definition}{(Principal root of unity, adapted from~\cite{MISC:WikiRoot})} \label{def:PrincipalRoot}
     Let \(\RingR\) be a commutative ring with identity. We call \(\zeta \in \RingR\) a principal \(N\textsuperscript{th}\) root of unity if
     \begin{enumerate}
-        \item \(N\) is relatively prime with \(\mathsf{char}(\RingR)\)
+        \item \(N\) is invertible (equivalently, \(N\) is coprime to the ring characterstic \(\mathsf{char}(\RingR)\))
         \item \(\zeta^N = 1\)
         \item \(\forall 1 \le k < N:\: \sum_{i=0}^{N-1}\zeta^{ik} = 0\)
     \end{enumerate}
@@ -47,7 +47,7 @@ Let \(p \ne 2\) be a prime. A well known result due to Gau{\ss} says for any \(m
 
 Although \(\Z_{p^m}\) contains a principal \((p-1)\textsuperscript{th}\) root of unity, which is a generator of the unique cyclic subgroup of \(\Z_{p^m}^{\times}\) order \((p - 1)\), the problem is that in most cases of interest, the convolution length \(N \gg p\) (this holds in particular when \(p = 2\)). To find large principal roots of unity while still preserving the modular structure forces us to look at extension rings. This is where the Galois Ring comes into our picture.
 
-Galois Rings can be motivated, defined and represented in a number of different ways. We refer the reader to \ToRef{Galois Rings} for more backgrounds and theories. Here we would like to think of a Galois Ring \(\GalRing{p^m}{r}\) as degree \(r\) extension of \(\Z_{p^m}\) in the same way that the Galois field \(\mathbb{F}_{p^r}\) is a degree \(r\) extension of \(\Z_p\).
+Galois Rings can be motivated, defined and represented in a number of different ways. We refer the reader to \cite{BOOK:GilFla12,BOOK:Macdonald74} for more backgrounds and theories. Here we would like to think of a Galois Ring \(\GalRing{p^m}{r}\) as degree \(r\) extension of \(\Z_{p^m}\) in the same way that the Galois field \(\mathbb{F}_{p^r}\) is a degree \(r\) extension of \(\Z_p\).
 
 \begin{definition}{(Galois Ring~\cite{MISC:WikiGalRing})} \label{def:GaloisRing}
     The Galois Ring \(\GalRing{p^m}{r}\) can be represented by a quotient polynomial ring \(\Z[x] / (p^m, f(x))\) where \(f(x)\) is a degree \(r\) monic polynomial which is also irreducible \(\bmod \  p\).
@@ -57,7 +57,7 @@ Just like finite fields, all Galois Rings with the same modulus \(p^m\) and exte
 
 In finite field theory, a degree \(r\) polynomial \(f(x) \in \Z_p[x]\) is called \emph{primitive} if \(f(x)\) is monic irreducible and \(x \pmod{p, f(x)}\) has order \(p^r - 1\) in \(\mathbb{F}_{p^r} \cong \Z_p[x]/(f(x))\). In other words, the equivalent class of \([x]\) is a primitive \((p^r - 1)\textsuperscript{th}\) root of unity.
 
-We would like to find analogues of primitive polynomials over the ring \(\Z_{p^m}[x]\). Indeed, using Hensel's lifting technique, we can lift a primitive polynomial \(f(x) \in \Z_p[x]\) to \(F(x) \in \Z_{p^m}[x]\). We will show that the lifted polynomial has some desirable properties.
+We would like to find analogues of primitive polynomials over the ring \(\Z_{p^m}[x]\). Indeed, using Hensel's lifting technique, we can lift a primitive polynomial \(f(x) \in \Z_p[x]\) to \(F(x) \in \Z_{p^m}[x]\). We will show that the lifted polynomial has desirable properties.
 \begin{theorem}{(Hensel Lifting, integral form~\cite{MISC:WikiHensel})} \label{thm:HenselLifting}
     Suppose \(f(x) \equiv \alpha_0 g(x) h(x) \pmod{p}\), where \(\alpha_0\) is not divisible by \(p\) and \(g(x), h(x)\) are monic polynomials that are coprime \(\bmod \  p\). Then \(\forall k \ge 1\) there exist polynomials \(g_k(x), h_k(x) \in \Z[x]\) unique up to \(\bmod \  p^k\) such that
     \begin{enumerate}
@@ -84,6 +84,7 @@ We would like to find analogues of primitive polynomials over the ring \(\Z_{p^m
     \smallskip
     \noindent2. \quad The only nontrivial part to verify is condition 3 in \cref{def:PrincipalRoot}. Let \(N = p^r - 1\) and fix \(0 < k < N\). It is easy to see that \((x^k - 1)(\sum_{i=0}^{N-1} x^{ik}) = x^{kN} - 1 \equiv 0 \pmod{p^m, f_m(x)}\). We claim that \(x^k - 1 \pmod{p^m, f_m(x)}\) has a multiplicative inverse over \(\Z_{p^m}[x]\). If the claim is true, we can multiply the inverse and obtain \(\sum x^{ik} \equiv 0 \pmod{p^m, f_m(x)}\). The equivalent class \([x]\) is therefore a principal \((p^r - 1)\textsuperscript{th}\) root of unity.
 
+    \ifFullVersion
     \medskip
     \noindent{\bf Claim:} \(\exists h(x):\: (x^k - 1)h(x) \equiv 1 \pmod{p^m, f_m(x)}\)
 
@@ -96,12 +97,148 @@ We would like to find analogues of primitive polynomials over the ring \(\Z_{p^m
 
     \noindent\emph{proof of lifting.} \quad Write \((x^k - 1)h_l(x) = 1 = p^l M_l(x) + f_m(x) N_l(x)\) for some polynomials \(M_l(x), N_l(x)\). Then
     \begin{align*}
-        &(x^k - 1)^2h_l(x)^2 = 1 + 2p^l M_l(x) + p^{l+1}(p^{l-1}M_l(x)^2) + f_m(x)\left(f_m(x) N_l(x)^2 + 2 N_l(x) (1 + p^l M_l(x)) \right) \\
+        &(x^k - 1)^2h_l(x)^2 = 1 + 2p^l M_l(x) + p^{l+1}(p^{l-1}M_l(x)^2) + f_m(x)\left(f_m(x) N_l(x)^2  \right.\\
+        &\left. + 2 N_l(x) (1 + p^l M_l(x)) \right) \\
         &2(x^k - 1)h_l(x) = 2 + 2p^l M_l(x) + f_m(x) N_l(x) \\
         \implies &(x^k - 1)h_{l+1}(x) = 1 + p^{l+1} M_{l+1}(x) + f_m(x) N_{l+1}(x)
     \end{align*}
     for some polynomials \(M_{l+1}(x), N_{l+1}(x)\). Therefore we can use Newton-Rhaphson division to lift the inverse up to \(\bmod \  p^m\). This shows that \(x^k - 1\) and the claim is proven.
 
     \medskip
+    \else
+    We refer reader to \cref{proof:LiftedPrimPoly} in the appendix for a detailed proof of the claim.
+    \fi
     \noindent3. \quad is a straightforward consequence of 2.
 \end{proof}
+
+\subsection{On Efficient Lifting}
+We need o address an uncomfortable algorithmic issue before we proceed to the next section. Traditionally, Hensel Lifting is usually accomplished by starting with a coprime factoization \(f(x) = g(x)h(x) \pmod{p}\) and use inexpensive polynomial GCD operations to lift to the factorization \(f(x) = f_m(x) g_m(x) \pmod{p^m}\). Our trouble is that both \(x^{p^r - 1} - 1\) and \(x^{p^r - 1} - 1 / f(x)\) are too big even for moderately large \(r\) \ifFullVersion(We tried to key in \(x^{2^{32} - 1} - 1\) into the Sagemath/Python but the system complains and refuses to digest it) \fi.
+
+Fortunately, there is a way to only lift the primitive polynomial \(f(x)\) without knowing or caring about its coprime factor. The method we use comes from \cite{IRISHMATH:Gary01}, but it may already be described and used in other contexts.
+
+\begin{proposition}{(Adapted from \cite{IRISHMATH:Gary01} Theorem 1)} \label{prop:LiftPrimOnly}
+    Let \(k > 0\) and suppose a monic polynomial \(f_k(x) \in \Z[x]\) satisfies:
+    \begin{itemize}
+        \item \(f_k(x) \bmod p^k\) is irreducible over \(\Z_{p^k}[x]\)
+        \item \(\exists M\) coprime to \(p\) such that \(f_k(x) \mid x^M - 1\) over \(\Z_{p^k}[x]\)
+    \end{itemize}
+    We let \(f_{k+1}(x)\) be a monic polynomial whose roots are the \(p\textsuperscript{th}\) power of the roots of \(f_k(x)\) over an algebraically closed field. \(f_{k+1}\) satisfies the following properties:
+    \begin{enumerate}
+        \item \(f_{k+1}(x) \in \Z[x]\) is integral
+        \item \(f_{k+1}(x) \equiv f_k(x) \pmod{p^k}\), hence \(f_{k+1}(x)\) is irreducible over \(\Z_{p^{k+1}}[x]\)
+        \item \(f_{k+1}(x) \mid x^M - 1\) over \(\Z_{p^{k+1}}[x]\)
+    \end{enumerate}
+    In otherwords, the Hensel Lifting of \(f_k(x) \bmod p^k\) is exactly \(f_{k+1}(x) \bmod p^{k+1}\)
+\end{proposition}
+
+\ifFullVersion
+\begin{proof}
+    For the proof we are going to use some p-adic theory. Let \(\mathcal{Z}_p\) be the ring of p-adic integers and \(\mathcal{Q}_p\) the field of p-adic rationals. Since \(M\) is coprime to \(p\) the polynomial \(x^M - 1\) has \(M\) distinct roots of unity over an extension field of \(\mathcal{Q}_p\).
+
+    By Hensel Lifting Lemma~\cref{thm:HenselLifting}, there exists \(f_{k+1}(x), g(x) \in \Z[x]\) such that \(f_{k+1}(x) \mid x^M - 1\) over \(\Z_{p^{k+1}}[x]\) and \(f_{k+1}(x) \equiv f_k(x) + p^k g(x) \pmod{p^{k+1}}\). Therefore item 1 and 2 of \cref{prop:LiftPrimOnly} are immediate, and it remains to show item 3.
+
+    Moreover, if \(\alpha_k\) is a root of \(f_k(x)\) over \(\Z_{p^k}\), namely \(f_k(\alpha_k) \equiv 0 \pmod{p^k}\). There would exist a root \(\alpha_{k+1} = \alpha_k + p^k \delta\), where \(\delta\) lies in an extension field of \(\mathcal{Q}_p\), of \(f_{k+1}(x)\) over \(\Z_{p^{k+1}}\). In other words, \(f_{k+1}(\alpha_{k+1}) \equiv 0 \pmod{p^{k+1}}\).
+
+    Since \(f_k(x) \mid x^M - 1\) over \(\Z_{p^k}[x]\), there exists an \(\epsilon\) in an extension field of \(\mathcal{Q}_p\) such that \(\alpha_k^M = 1 + p^k \epsilon\). Because
+    \begin{align*}
+        &\alpha_{k+1}^p = (\alpha_k + p^k \delta)^p = \alpha_k^p + O(p^{k+1}) \equiv \alpha_k^p \pmod{p^{k+1}} \\
+        &\alpha_{k+1}^{pM} = (\alpha_k + p^k \delta)^{pM} = \alpha_k^{pM} + O(p^{k+1}) = (1 + p^k \epsilon)^p + O(p^{k+1}) = 1 + O(p^{k+1}) \equiv 1 \pmod{p^{k+1}}
+    \end{align*}
+    Hence the \(p\textsuperscript{th}\) power of distinct roots \(\alpha_k\) of \(f_k(x)\) over \(\Z_{p^k}\) are all distinct roots of \(x^M - 1\) over \(\Z_{p^{k+1}}\). In addition, \(\alpha_{k+1}^p \equiv \alpha_k^p \equiv \alpha_k \pmod{p}\), and we must therefore have \(f_k(\alpha_k^p) \equiv 0 \pmod{p^k}\).
+
+    The roots of \(f_{k+1}\) over \(\Z_{p^{k+1}}\) are, up to \(\bmod \  p^{k+1}\) the \(p\textsuperscript{th}\) power of all the roots of \(f_k(x)\) over \(\Z_{p^k}\). Therefore item 3 is proven.
+\end{proof}
+\else
+\begin{proof}
+    The proof uses some p-adic theory and notations. We refer the reader to \cref{proof:LiftPrimOnly} in the appendix for a detailed proof.
+\end{proof}
+\fi
+
+Similar to GCD operations, we can in fact calculate the lifting using operations over the ground ring \(\Z\). This can be done with polynomial resultants.
+\begin{definition}{(Univariate Resultant \cite{MISC:WikiResultant})} \label{def:Resultant}
+    Let \(f(x) = a_0 + a_1 x + \ldots + a_n x^n\), \(g(x) = b_0 + b_1 x + \ldots + b_m x^m\) where \(a_n, b_m \neq 0\). The resultant of \(f, g\) is the determinant of the \((m+n)\times(m+n)\) Silvester matrix:
+    \[\mathsf{Res}(f, g) \coloneq \det
+        \begin{pmatrix}
+            a_0 & a_1 & \cdots & a_n & 0 & \cdots & 0 \\
+            0 & a_0 & a_1 & \cdots & a_n & \cdots & 0 \\
+            \vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \vdots \\
+            0 & \cdots & 0 & a_0 & a_1 & \cdots & a_n \\
+            b_0 & b_1 & \cdots & b_m & 0 & \cdots & 0 \\
+            0 & b_0 & b_1 & \cdots & b_m & \cdots & 0 \\
+            \vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \vdots \\
+            0 & \cdots & 0 & b_0 & b_1 & \cdots & b_m \\
+            \end{pmatrix}
+    \]
+    In particular, if \((\alpha_i)_{i=1}^n,\, (\beta_j)_{j=1}^m\) are the roots of \(f, g\) in some extension field. Then
+    \[\mathsf{Res}(f,g) = a_0^m \prod_{i=1}^{n}g(\alpha_i) = (-1)^{mn}b_0^n \prod_{j=1}^{m} f(\beta_j)\]
+\end{definition}
+
+\begin{proposition} \label{prop:PowerP}
+    Let \(d > 0\), \(f(x) \in \Z[x]\) be a degree \(n\) monic polynomial, \(g(x) = \mathsf{Res}_y(x - y^d, f(y))\) the resultant of \(x - y^d, f(y)\) considered as polynomials in \(y\) with coefficients in \(\Z[x]\). Then \(g(x) \in \Z[x]\) with leading coefficient \(\pm 1\). Moreover, the roots of \(g(x)\) are exactly the \(d\textsuperscript{th}\) power of all the roots of \(f(x)\) over an algebraically closed field.
+\end{proposition}
+\begin{proof}
+    Let \(\mathcal{K}\) be an algebraically closed field containing \(\mathbb{Q}(x)\). Let \(\beta_0, \ldots, \beta_{n-1} \in \mathcal{K}\) be the roots of \(f(y)\) and \(\zeta \in \mathcal{K}\) a primitive \(d\textsuperscript{th}\) root of unity. We have
+    \[ x - y^d = \prod_{i=0}^{d-1} (x^{\frac{1}{d}} - \zeta^i y), \qquad 
+    f(y) = \prod_{i=0}^{n-1} (y - \beta_i) \]
+    Therefore the product over root property in \cref{def:Resultant} asserts that
+    \begin{align*}
+        &\mathsf{Res}_y(x-y^d, f(y)) = (-1)^n \prod_{i=0}^{d-1} f(\zeta^{d-i} x^{\frac{1}{d}}) = (-1)^n \prod_{i=0}^{d-1} \prod_{j=0}^{n-1}(\zeta^{d-i} x^{\frac{1}{d}} - \beta_j) \\
+        &= (-1)^n \prod_{j=0}^{n-1}\left(\prod_{i=0}^{d-1}\zeta^{d-i}\right)\prod_{i=0}^{d-1}(x^{\frac{1}{d}} - \zeta^i \beta_j) = (-1)^n \zeta^{\frac{d(d-1)n}{2}} \prod_{j=0}^{n-1} (x - \beta_j^d) \\
+        &= \pm \prod_{j=0}^{n-1}(x - \beta_j^d)
+    \end{align*}
+    Therefore, up to sign, \(g(x)\) is the monic polynomial whose roots are exactly the \(d\textsuperscript{th}\) power of the roots of \(f(x)\). \(g(x) \in \Z[x]\) since the coefficients of \(x - y^n, f(y)\) all belong to \(\Z[x]\)
+\end{proof}
+
+We can combine \cref{prop:LiftPrimOnly,prop:PowerP} to construct an efficient algorithm to lift primitive polynomials.
+
+\begin{algorithm}
+\caption{Hensel Lift Primitive Polynomial}\label{alg:HenselLift}
+\begin{algorithmic}[1]
+    \Require Monic degree \(r\) primitive polynomial \(f(x) \in \Z_p[x]\) and exponent \(m\)
+    \Ensure The Hensel Lifted monic polynomial \(f_m(x) \in \Z_{p^m}[x]\)
+    \State Let \(f_1(x) = f(x)\) and regard \(f_1(x) \in \Z[x]\)
+    \For{\(k \gets 2\) to \(m\)}
+        \State Calculate \(g(x) = \mathsf{Res}_y(x - y^p, f_{k-1}(y))\) and normalize \(g(x)\) to be monic
+        \State Let \(f_k(x) = g(x) \bmod p^k\)
+    \EndFor
+    \State {\bf Return} \(f_m(x)\)
+\end{algorithmic}
+\end{algorithm}
+\ifFullVersion
+\begin{remark}
+    Alternatively, we may simply calculate \(g(x) = \mathsf{Res}_y(x - y^{p^m}, f(y))\) and directly obtain \(f_m(x) = g(x) \bmod p^m\). The difference is mainly that of efficiency.
+
+    In \cref{alg:HenselLift} we calculate \(m-1\) determinants whose matrices are of dimension \(p + r - 1\) whereas here we calculate 1 determinant whose matrix is of dimension \(p^m + r - 1\)
+\end{remark}
+\begin{remark}
+    When \(p = 2\), we may use the following simplified procedure inside the for loop of \cref{alg:HenselLift}:
+    \begin{itemize}
+        \item 3(b). Calculate \(G(x) = f_{k-1}(x) f_{k-1}(-x)\). Replace \(x^2\) by \(x\) to obtain \(g(x) = G(\sqrt{x})\). Normalize \(g(x)\) to be monic.
+        \item 4(b). Let \(f_k(x) = g(x) \bmod 2^k\)
+    \end{itemize}
+\end{remark}
+\begin{example}
+    Let \(p = 2\), \(f(x) = x^5 + x^2 + 1\) is a monic primitive polynomial over \(\Z_2[x]\). According to \cref{alg:HenselLift} and the previous remark
+    \begin{align*}
+        f_1(x)f_1(-x) &= -x^{10} + x^4 + 2x^2 + 1 \\
+        f_2(x) &= x^5 + 3x^2 + 2x + 3 \\
+        f_2(x)f_2(-x) &= -x^{10} - 4x^6 + 9x^4 + 14x^2 + 9 \\
+        f_3(x) &= x^5 + 4x^3 + 7x^2 + 2x + 7 \\
+        f_3(x)f_3(-x) &= -x^{10} - 8x^8 - 20x^6 + 33x^4 + 94x^2 + 49 \\
+        f_4(x) &= x^5 + 8x^4 + 4x^3 + 15x^2 + 2x + 15
+    \end{align*}
+    We can verify that the class \([x]\) is a principal \(2^5 - 1 = 31\textsuperscript{th}\) root of unity in the Galois Ring \(\GalRing{2^4}{5} \cong \Z[x]/(16, f_4(x))\)
+\end{example}
+\fi
+\begin{example}
+    Let \(p = 3\), \(f(x) = x^5 + 2x + 1\) is a monic primitive polynomial over \(\Z_3[x]\). According to \cref{alg:HenselLift}
+    \begin{align*}
+        \mathsf{Res}_y(x - y^3, f(y)) &= -x^5 + 6x^2 - 8x - 1 \\
+        f_2(x) &= x^5 + 3x^2 + 8x + 1 \\
+        \mathsf{Res}_y(x - y^3, f_2(y)) &= -x^5 - 9x^4 - 27x^3 - 3x^2 - 440x - 1 \\
+        f_3(x) &= x^5 + 9x^4 + 3x^2 + 8x + 1 \\
+        \mathsf{Res}_y(x - y^3, f_2(y)) &= -x^5 - 738x^4 - 1944x^3 - 1650x^2 - 440x - 1 \\
+        f_4(x) &= x^5 + 9x^4 + 30x^2 + 35x + 1
+    \end{align*}
+    We can easily verify that the equivalent class \([x]\) is a principal \(3^5 - 1 = 242\textsuperscript{th}\) root of unity in the Galois Ring \(\GalRing{3^4}{5} \cong \Z[x]/(81, f_4(x))\)
+\end{example}

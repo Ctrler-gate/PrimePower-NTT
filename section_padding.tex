@@ -1,0 +1,40 @@
+%!TEX root=main.tex
+\section{Padding to Better Lengths} \label{section:padding}
+NTT/FFT related algorithms usually work best, or only work, over special lengths. Given arbitrary length argument, we usually need to 0-pad them to longer sequences to apply these algorithms. In this paper we will adopt the following simple padding strategy.
+
+\begin{proposition}\label{prop:Padding}
+    Let \(\bm{u} = \expdVec{u}{N}, \bm{v} = \expdVec{v}{N}\) be 2 sequences of length \(N\). For any \(M \ge 2N - 1\), we can reduce the length \(N\) circular convolution problem to the length \(M\) circular convolution problem using the following padding strategy:
+    \begin{itemize}
+        \item Let \(\Delta_1 = M - 2N + 1\) and let \(\bm{u}' = \bm{u} \parallel \bm{0}^{\Delta_1} \parallel (u_1, \ldots, u_{N-1})\)
+        \item Let \(\Delta_2 = M - N\) and let \(\bm{v}' = \bm{v} \parallel \bm{0}^{\Delta_2}\)
+        \item Calculate the length \(M\) circular convolution \(\bm{w}' = \bm{u}' \circledast \bm{v}'\) and retain only the first \(N\) result \(\bm{w} = \expdVec{w'}{N}\)
+    \end{itemize}
+\end{proposition}
+\begin{proof}
+    For any \(0 \le i < N\):
+    \begin{align*}
+        w'_i &= \sum_{j=0}^{M-1}u'_j v'_{i-j} = \sum_{j=0}^{M-1} v'_j u'_{i-j} = \sum_{j=0}^{N-1} b_j a'_{i-j} \\
+            &= \sum_{j=0}^{i}v_j u_{i-j} + \sum_{j=i+1}^{N-1}v_j u_{M - (j-i)} = \sum_{j=0}^{i} v_j u_{i-j} + \sum_{j=i+1}^{N-1} v_j u_{N - (j-i)} \\
+            &= \sum_{j=0}^{N-1} v_j u_{i-j} = w_i
+    \end{align*}
+\end{proof}
+\ifFullVersion
+\begin{example}
+    Suppose \(N = 3\) and \(\bm{u} = (1,2,3),\, \bm{v} = (-1, 0, 1)\). To calculate their circular convolution it is convenient to pad the inputs to length \(M = 8 > 2N - 1\). According to \cref{prop:Padding}
+    \[\bm{u}' = (1,2,3,0,0,0,2,3), \qquad \bm{v}'=(-1, 0, 1, 0, 0, 0, 0, 0)\]
+    We then calculate the circular convolution of \(\bm{u}', \bm{v}'\), or equivalently calculate
+    \[\setlength{\arraycolsep}{5pt}\begin{bmatrix}
+        1 & 3 & 2 & 0 & 0 & 0 & 3 & 2 \\
+        2 & 1 & 3 & 2 & 0 & 0 & 0 & 3 \\
+        3 & 2 & 1 & 3 & 2 & 0 & 0 & 0 \\
+        0 & 3 & 2 & 1 & 3 & 2 & 0 & 0 \\
+        0 & 0 & 3 & 2 & 1 & 3 & 2 & 0 \\
+        0 & 0 & 0 & 3 & 2 & 1 & 3 & 2 \\
+        2 & 0 & 0 & 0 & 3 & 2 & 1 & 3 \\
+        3 & 2 & 0 & 0 & 0 & 3 & 2 & 1
+    \end{bmatrix} \begin{bmatrix}
+        -1 \\ 0 \\ 1 \\ 0 \\ 0 \\ 0 \\ 0 \\ 0
+    \end{bmatrix}\]
+    And only retain the first 3 components
+\end{example}
+\fi
