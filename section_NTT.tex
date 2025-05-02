@@ -1,0 +1,214 @@
+%!TEX root=main.tex
+\section{Efficient NTT and Convolution} \label{section:ntt}
+Now that we have a large enough principal root of unity, and a way to pad inputs to arbitrary greater lengths, it seems like we just need to plug in an off-the-shelf NTT/FFT algorithm and finish our job. Unfortunately, the very limited roots of unity in our setting severely limit the scope of applicable algorithms.
+
+\begin{example}
+    Let \(p = 2\). \Cref{prop:LiftedPrimPoly} guarantees principal roots of unity of order \(N \mid 2^r - 1\). But \(N\) is then always odd, hence the famous Cooley-Tuckey radix 2 algorithm~\cite{IEEE:Cooley67}, split radix 4 algorithm~\cite{EL:Duhamel84}, as well as Bluestein FFT algorithm~\cite{IEEE:Bluestein70} cannot be applied here.
+\end{example}
+\begin{example}
+    Let \(p =2\) and \(N = 1000\). We could instead use a radix \(q\) Cooley-Tuckey algorithm, for instance \(q = 3\). The smallest power of \(3 \ge 2N - 1\) is \(M = 3^7 = 2187\), and the smallest \(r\) such that \(M \mid 2^r - 1\) is the multiplicative order of \(2 \bmod 3^7\) and equals \(r = 1458\). The huge polynomial degree clearly renders the computation impractical.
+\end{example}
+
+These 2 examples suggest that a pure-radix strategy is not generally applicable or practical, and therefore we need to incorporate mixed radix strategy. Our method is the combination of the following 2 algorithms.
+\begin{enumerate}
+    \item The first algorithm handles the case of prime power length. Here we depart from FFT methodology and consider another \(O(N \log N)\) algorithm that computes the circular convolution in 1 pass. Our algorithm is a slightly generalized version found in \cite{ARXIV:Rosowski21} that handles arbitrary radix.
+    \item The second algorithm is essentially the Good-Thomas Prime Factorization algorithm~\cite{JRSS:Good58,ADC:Thomas63}. If the length \(N = N_1 N_2\) can be factored into coprime factors, this method reduces the computation of length \(N\) fourier transform to computations of block-wise fourier transforms of length \(N_1\) and \(N_2\)
+\end{enumerate}
+
+In \ToRef{Combination} the 2 algorithms above are combined to handle smooth convolution length \(N = q_1 q_2 \ldots q_{n-1} q_n^e\) where \(q_1, \ldots, q_n\) are small primes and \(e \ge 1\).
+
+\subsection{Prime Power Case}
+First we recall the notion of an \(f\)-circulant matrix.
+\begin{definition}{\(f\)-circulant matrix} \label{def:CircMat}
+    Let \(\expdVec{a}{N}\) be a sequence and \(f\) a number. The \(f\)-circulant matrix associated with \(\expdVec{a}{N}\) is an \(N \times N\) matrix \(\bm{A}\) satisfying:
+    \[\forall 0 \le i,j < N:\: \bm{A}_{i,j} = \begin{cases}
+        a_{j - i} & \text{if \(i \le j\)} \\
+        f a_{N+j-i} & \text{otherwise}
+    \end{cases}\]
+\end{definition}
+The \(1\)-circulant matrix is just a circulant matrix, while a \((-1)\)-circulant matrix is usually called a nega-cyclic circulant matrix.
+
+\ifFullVersion
+We first present the simple and elegant method described in \cite{ARXIV:Rosowski21}
+\begin{theorem}{\cite{ARXIV:Rosowski21}} \label{thm:CircMult1}
+    Let \(\RingR\) be a commutative ring with identity, \(N\) a power of \(2\) and \(f \in \RingR\). Suppose
+    \begin{itemize}
+        \item \(\RingR\) contains an \(N\textsuperscript{th}\) root of unity and an \(N\textsuperscript{th}\) root of \(f\)
+        \item \(2, f\) both have multiplicative inverse in \(\RingR\)
+    \end{itemize}
+    Then the multiplication of an \(f\)-circulant matrix \(\bm{A}\in \RingR^{N \times N}\) and a vector \(\bm{b} \in \RingR^N\) can be done with \(O(N \log N)\) ring operations using \cref{alg:Mult1}.
+\end{theorem}
+\begin{algorithm}
+    \caption{CircMatMult: Multiply an \(f\)-circulant matrix with a vector}\label{alg:Mult1}
+    \begin{algorithmic}[1]
+        \Require \(f\)-circulant matrix \(\bm{A}\), input vector \(\bm{b}\), \(f\) and length \(N\)
+        \Ensure product \(\bm{A} \cdot \bm{b}\)
+        \If {\(N = 2\)} \Comment{Base Case}
+            \State {\bf Return} \(\bm{A} \cdot \bm{b}\)
+        \EndIf
+        \State Decompose \(\bm{A} = \begin{pmatrix}
+            \bm{A}_1 & \bm{A}_2 \\ f \bm{A}_2 & \bm{A}_1
+        \end{pmatrix}\) where \(\bm{A_1}, \bm{A_2} \in \RingR^{N/2 \times N/2}\). Parse \(\bm{b} = (\bm{b}_1 \parallel \bm{b}_2)^{\top}\) where \(\bm{b}_1, \bm{b}_2 \in \RingR^{N/2}\)
+        \State Calculate
+            \begin{align*}
+                \bm{M}_1 &= \bm{A}_1 + \sqrt{f} \bm{A}_2 \in \RingR^{N/2 \times N/2} \\
+                \bm{M}_2 &= \bm{A}_1 - \sqrt{f} \bm{A}_2 \in \RingR^{N/2 \times N/2} \\
+                \bm{d}_1 &= \sqrt{f} \bm{b}_1 + \bm{b}_2 \in \RingR^{N/2} \\
+                \bm{d}_2 &= \sqrt{f} \bm{b}_1 - \bm{b}_2 \in \RingR^{N/2}
+            \end{align*}
+        \State Recursively calculate
+            \begin{align*}
+                \bm{e}_1 &= \text{CircMatMult}(\bm{M}_1, \bm{d}_1, \sqrt{f}, \frac{N}{2}) \\
+                \bm{e}_2 &= \text{CircMatMult}(\bm{M}_2, \bm{d}_2, -\sqrt{f}, \frac{N}{2})
+            \end{align*}
+        \State Compute \(\bm{c}_1 = \frac{\bm{e}_1 + \bm{e}_2}{2\sqrt{f}}\), \(\bm{c}_2 = \frac{\bm{e}_1 + \bm{e}_2}{2} - \bm{e}_2\)
+        \State {\bf Return} \(\bm{c} = (\bm{c}_1 \parallel \bm{c}_2)^{\top} \)
+    \end{algorithmic}
+\end{algorithm}
+\begin{proof}
+    On one hand, \(\begin{pmatrix}
+        \bm{A}_1 & \bm{A}_2 \\ f \bm{A}_2 & \bm{A}_1
+    \end{pmatrix} \begin{pmatrix}
+        \bm{b}_1 \\ \bm{b}_2
+    \end{pmatrix} = \begin{pmatrix}
+        \bm{A}_1 \bm{b}_1 + \bm{A}_2 \bm{b}_2 \\
+        \bm{A}_1 \bm{b}_2 + f \bm{A}_2 \bm{b}_1
+    \end{pmatrix}\)
+
+    Assume the recursion step of the algorithm gives the correct result. Then
+    \begin{align*}
+        \bm{e}_1 = \bm{M}_1 \bm{d}_1 &= \sqrt{f}(\bm{A}_1 \bm{b}_1 + \bm{A}_2 \bm{b}_2) + (\bm{A}_1 \bm{b}_2 + f \bm{A}_2 \bm{b}_1) \\
+        \bm{e}_2 = \bm{M}_2 \bm{d}_2 &= \sqrt{f}(\bm{A}_1 \bm{b}_1 + \bm{A}_2 \bm{b}_2) - (\bm{A}_1 \bm{b}_2 + f \bm{A}_2 \bm{b}_1)
+    \end{align*}
+    Hence the final result is correct.
+
+    Next we claim that \(\bm{M}_1, \bm{M_2}\) are respectively \(\sqrt{f}, -\sqrt{f}\)-circulant matrices. This ensures that the recursion step is correct. Below we prove this fact for \(\bm{M}_1\).
+
+    Since \(\bm{A}\) is \(f\)-circulant, \(\exists (a)_{i=0}^{N-1}\) such that \(\bm{A}_{i,j} = \begin{cases}
+        a_{j-i} & \text{if \(i \le j\)} \\
+        f a_{N+j-i} & \text{otherwise}
+    \end{cases}\). 
+    
+    For \(0 \le i < \frac{N}{2}\), define \(\alpha_i = a_i + \sqrt{f}a_{\frac{N}{2} + i}\).
+
+    If \(0 \le i \le j < \frac{N}{2}\):
+    \begin{align*}
+        (\bm{M}_1)_{i,j} &= (\bm{A}_1)_{i,j} + \sqrt{f}(\bm{A}_2)_{i,j} = \bm{A}_{i,j} + \sqrt{f} \bm{A}_{i, j + \frac{N}{2}} \\
+        &= a_{j-i} + \sqrt{f} a_{j + \frac{N}{2} - i} = \alpha_{j-i}
+    \end{align*}
+
+    If \(0 \le j < i < \frac{N}{2}\):
+    \begin{align*}
+        (\bm{M}_1)_{i,j} &= \bm{A}_{i,j} + \sqrt{f} \bm{A}_{i, j + \frac{N}{2}} = f a_{N+j-i} + \sqrt{f}a_{j + \frac{N}{2} - i} \\
+        &= \sqrt{f}(a_{\frac{N}{2}+j-i} + \sqrt{f}a_{\frac{N}{2} + \frac{N}{2} + j - i}) = \sqrt{f} \alpha_{\frac{N}{2}+j-i}
+    \end{align*}
+
+    Hence \(\bm{M}_1\) is \(\sqrt{f}\) circulant. The case of \(\bm{M}_2\) follows similarly.
+
+    Finally, the algorithm follows the classical divide and conquer qpproach and hence has time complexity \(O(N \log N)\).
+\end{proof}
+\fi
+
+We now propose a generalized version of the algorithm described in \cite{ARXIV:Rosowski21}. Ours support any radix \(B\) that satisfies the condition in the following theorem.
+\begin{theorem} \label{thm:CircMult2}
+    Let \(\RingR\) be a commutative ring with identity, \(B > 0\) and \(N\) a power of \(B\). Let \(f \in \RingR\). Suppose
+    \begin{itemize}
+        \item \(\RingR\) contains an \(N\textsuperscript{th}\) root of unity and an \(N\textsuperscript{th}\) root of \(f\)
+        \item \(B, f\) both have multiplicative inverse in \(\RingR\)
+    \end{itemize}
+    Then the multiplication of an \(f\)-circulant matrix \(\bm{A}\in \RingR^{N \times N}\) and a vector \(\bm{b} \in \RingR^N\) can be done with \(O(N \log N)\) ring operations using \cref{alg:Mult2}.
+\end{theorem}
+\begin{algorithm}
+    \caption{GenCircMatMult: Multiply an \(f\)-circulant matrix with a vector}\label{alg:Mult2}
+    \begin{algorithmic}[1]
+        \Require \(f\)-circulant matrix \(\bm{A}\), input vector \(\bm{b}\), \(f\) and length \(N\)
+        \Ensure product \(\bm{A} \cdot \bm{b}\)
+        \If {\(N = B\)} \Comment{Base Case}
+            \State {\bf Return} \(\bm{A} \cdot \bm{b}\)
+        \EndIf
+        \State Decompose \(\bm{A} = \begin{pmatrix}
+            \bm{A}_0 & \bm{A}_1 & \dots & \bm{A}_{B-1} \\ 
+            f \bm{A}_{B-1} & \bm{A}_0 & \dots &\bm{A}_{B-2} \\
+            & & \vdots & \\
+            f \bm{A}_1 & f \bm{A}_2 & \dots & \bm{A}_0
+        \end{pmatrix}\) where \(\bm{A_i}\in \RingR^{N/B \times N/B}\). Parse \(\bm{b} = \expdVecc{\bm{b}}{B}^{\top}\) where \(\bm{b}_i \in \RingR^{N/B}\)
+        \State Let \(\omega\) be a primitive \(B\textsuperscript{th}\) root of unity, \(r = f^{1/B}\) a \(B\textsuperscript{th}\) root of \(f\)
+        \For {\(i \gets 0 \text{ to } B-1\)}
+            \State Compute
+            \[
+                \bm{M}_i = \sum_{j=0}^{B-1}r^j \omega^{ij} \bm{A}_j, \qquad
+                \bm{d}_i = \sum_{j=0}^{B-1}r^{B-1-j} \omega^{-ij} \bm{b}_j
+            \]
+            \State Recursively compute \(\bm{e}_i = \text{GenCircMatMult}(\bm{M}_i, \bm{d}_i, r \omega^i, \frac{N}{B})\)
+        \EndFor
+        \For {\(i \gets 0 \text{ to } B-1\)}
+            \State Calculate \(\bm{c}_i = \left(B r^{B-1-i}\right)^{-1} \sum_{j=0}^{B-1}\omega^{ij}\bm{e}_j\)
+        \EndFor
+        \State {\bf Return} \(\bm{c} = \expdVecc{\bm{c}}{B}^{\top}\)
+    \end{algorithmic}
+\end{algorithm}
+
+\ifFullVersion
+\begin{proof}
+    Assume the recursion step gives the correct result, then \(\forall 0 \le i < B\):
+    \begin{align*}
+        \bm{c}_i &= \left(B r^{B-1-i}\right)^{-1} \sum_{j=0}^{B-1} \omega^{ij} \bm{e}_j \\
+        &=  \left(B r^{B-1-i}\right)^{-1} \sum_{j=0}^{B-1} \left( \omega^{ij} \left(\sum_{k=0}^{B-1}r^k \omega^{kj} \bm{A}_k\right) \left(\sum_{l=0}^{B-1}r^{B-1-l} \omega^{-lj} \bm{b}_l\right)\right) \\
+        &= B^{-1} \sum_{j,k,l} r^{i+k-l} \omega^{j(i+k-l)} \bm{A}_k \bm{b}_l = \sum_{k,l}r^{i+k-l} \bm{A}_k \bm{b}_l \cdot B^{-1}\sum_j \omega^{j(i+k-l)} \\
+        &= \sum_{k,l} r^{i+k-l} \bm{A}_k \bm{b}_l \cdot [l \equiv i + k \pmod{B}]= \sum_{k=0}^{B-1-i} \bm{A}_k \bm{b}_{i+k} + \sum_{k=B-i}^{B-1}f \bm{A}_k \bm{b}_{i+k-B}
+    \end{align*}
+    The final expression is exactly the \(i\textsuperscript{th}\) block of the product \(\bm{A} \bm{b}\)
+
+    Next we show that \(\forall 0 \le k < B\), the matrix \(\bm{M}_k\) is a \(\omega^k r\)-circulant \(\frac{N}{B} \times \frac{N}{B}\) matrix.
+
+    Because \(\bm{A}\) is \(f\)-circulant, \(\exists (a)_{i=0}^{N-1}\) such that \(\bm{A}_{i,j} = \begin{cases}
+        a_{j-i} & \text{if \(i \le j\)} \\
+        f a_{N+j-i} & \text{otherwise}
+    \end{cases}\). 
+    
+    For \(0 \le i < \frac{N}{B}\), define \(\alpha_i = \sum_{j=0}^{B-1} \omega^{jk}r^j a_{\frac{N}{B} j + i}\).
+
+    If \(0 \le i \le j < \frac{N}{B}\):
+    \[
+        (\bm{M}_k)_{i,j} = \sum_{l=0}^{B-1} r^l \omega^{kl} (\bm{A}_l)_{i,j} = \sum_{l=0}^{B-1} r^l \omega^{kl} \bm{A}_{i, \frac{N}{B}l + j}
+        = \sum_{l=0}^{B-1}r^l \omega^{kl} a_{\frac{N}{B}l + j - i} = \alpha_{j-i}
+    \]
+
+    If \(0 \le j < i < \frac{N}{B}\):
+    \begin{align*}
+        (\bm{M}_k)_{i,j} &= \sum_{l=0}^{B-1}r^l \omega^{kl} \bm{A}_{i, \frac{N}{B}l + j}= f a_{N + j - i} + \sum_{l=1}^{B-1}r^l \omega^{kl} a_{\frac{N}{B}l + j - i} \\
+        &= \omega^k r \left(\sum_{l=0}^{B-2} r^l \omega^{kl} a_{\frac{N}{B} + \frac{N}{B}l + j - i}\right) + \omega^k r \left(r^{B-1} \omega^{k(B-1) a_{\frac{N}{B} + \frac{(B-1)N}{B}+j-i}}\right) \\
+        &= \omega^k r (\alpha_{\frac{N}{B} + j - i})
+    \end{align*}
+    Therefore \(\bm{M}_k\) is an \(\omega^k r\)-circulant matrix.
+
+    Finally, the divide an conquer nature of the algorithm implies that the time complexity of \cref{alg:Mult2} is \(O(N \log N)\).
+\end{proof}
+
+\begin{example}
+    We illustrate the recursion step of our algorithm with an example. Let \(B=3\), \(\omega\) be a primitive \(3\textsuperscript{rd}\) root of unity and \(r = \sqrt[3]{f}\) a third root of \(f\). To calculate the product
+    \[\begin{pmatrix}
+        \bm{A}_0 & \bm{A}_1 & \bm{A}_2 \\
+        f \bm{A}_2 & \bm{A}_0 & \bm{A}_1 \\
+        f \bm{A}_1 & f \bm{A_2} & \bm{A}_0
+    \end{pmatrix} \begin{pmatrix}
+        \bm{b}_0 \\ \bm{b}_1 \\ \bm{b}_2
+    \end{pmatrix}\]
+    We let
+    \begin{align*}
+        \bm{M}_0 &= \bm{A}_0 + r \bm{A}_1 + r^2 \bm{A}_2 \; & \bm{d}_0 &= r^2 \bm{b}_0 + r \bm{b}_1 + \bm{b}_0 \\
+        \bm{M}_1 &= \bm{A}_0 + r \omega \bm{A}_1 + r^2 \omega^2 \bm{A}_2 \; & \bm{d}_1 &= r^2 \bm{b}_0 + r \omega^2 \bm{b}_1 + \omega \bm{b}_2 \\
+        \bm{M}_1 &= \bm{A}_0 + r \omega^2 \bm{A}_1 + r^2 \omega \bm{A}_2 \; & \bm{d}_2 &= r^2 \bm{b}_0 + r \omega \bm{b}_1 + \bm{b}_2
+    \end{align*}
+    and recursively compute the product \(\bm{e}_0 = \bm{M}_0 \bm{d}_0,\, \bm{e}_1 = \bm{M}_1 \bm{d}_1,\, \bm{e}_2 = \bm{M}_2 \bm{d}_2,\). Finally, we let
+    \begin{align*}
+        \bm{c}_0 &= \frac{\bm{e}_0 + \bm{e}_1 + \bm{e}_2}{3r^2} \\
+        \bm{c}_1 &= \frac{\bm{e}_0 + \omega \bm{e}_1 + \omega^2 \bm{e}_2}{3r} \\
+        \bm{c}_1 &= \frac{\bm{e}_0 + \omega^2 \bm{e}_1 + \omega \bm{e}_2}{3}
+    \end{align*}
+\end{example}
+\else
+\begin{proof}
+    We refer the reader to \cref{proof:CircMult2} in the appendix for a proof of \cref{thm:CircMult2}
+\end{proof}
+\fi

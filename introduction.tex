@@ -25,33 +25,43 @@ Let us briefly recall the classical NTT strategy:
 \fi
 
 \paragraph{The more general case}
-Though elegant, classical NTT imposes significant restrictions on the modulus and the convolution length. Since NTT has found important applications in Cryptography, Coding Theory, Communication Theory etc. there is an ongoing research attempting to work around this limitation. The aim is to efficiently compute the circular convolution / NTT under more general modulus and length.
+Though elegant, classical NTT imposes significant restrictions on the modulus and the convolution length. Since NTT has found important applications in Cryptography, Coding Theory, Communication Theory etc. there is an ongoing research attempting to work around this limitation. The aim is to efficiently compute the circular convolution/NTT under more general modulus and length.
 
 This paper considers this general question and focuses on prime power modulus \(p^m\) and arbitrary length. We are mostly interested in a very small prime \(p\): the most interesting case is \(p = 2\), since this is the default base in most modern computer architectures.
 
-To the best of our knowledge, the most practical ``generic'' solution to the arbirary modulus, arbitrary length problem makes use of multimodular NTT, a combination of classical NTT with Residue Number System and Chinese Remainder Theorem. See for example \cite{JSC:Shoup95} Sect~6. We refer the reader to the related work section for a brief overview of this strategy.
+To the best of our knowledge, one of the most effective, practical and generic solution to the arbirary modulus, arbitrary length problem makes use of multimodular NTT, a combination of classical NTT with Residue Number System and Chinese Remainder Theorem. See for example \cite{JSC:Shoup95} Sect.6. We refer the reader to the related work section for a brief overview of this strategy.
 
-\paragraph{Our perspectives and solutions}
-This paper approaches the convolution/NTT problem from a perspective different from the multimodular method. In that method, we must lift both arguments to \emph{integer sequences} and solve the integer circular convolution problem. Apart from bounding the size of the final result, the initial modulus plays almost no role in the multimodular NTT algorithm.
+\paragraph{Our perspectives}
+In the multimodular approach, we must lift both arguments to \emph{integer sequences} and solve the integer circular convolution problem. Apart from bounding the size of the final result, the initial modulus plays almost no role in the multimodular NTT algorithm. This paper explores whether we can use NTT in a modulus-aware fashion. Namely
 
-In contrast, we propose NTT-like strategies that closely follows the modular arithmetic. For simplicity, we focus on the prime power modulus \(p^m,\, m \ge 1\). At a high level, our strategy is the same as the classical NTT and its numerous variants. Namely:
+\begin{center}
+    \it
+    Is it possible to use NTT over prime power moduli \(p^m\), in such a way that the method is consistent with arithmetic \(\bmod \  p^m\)?
+\end{center}
+
+On the positive side, we will show that it is theoretically feasible to adapt NTT to handle prime power moduli and arbitrary (but very restricted) lengths. On the negative side, although our adapted NTT has a theoretical quasi-linear time complexity, a proof-of-concept implementation demonstrates that its concrete efficiency falls behind that of the multimodular NTT method and the efficiency of the state of the art modular polynomial multiplication algorithm. 
+
+We conclude that at this stage our idea works in theory, but is not practically efficient. It is an interesting future research direction to explore whether some parts of our strategy might help improve the concrete efficiency of practical solutions to the general NTT problem.
+
+\paragraph{Our method}
+At a high level, our strategy is the same as the classical NTT and its numerous variants. Namely:
 \begin{enumerate}
     \item Find a ``suitable'' set of roots of unity
     \item Pad the arguments to ``suitable'' lengths
     \item Employ ``suitable'' quasi-linear time algorithms to compute the fourier transform. pointwise multiply the intermediate result and use similar quasi-linear time algorithm to compute the inverse transform
 \end{enumerate}
 
-We need a number of less well-known techniques to make the strategy work in our setting. We do not claim novelty over these techniques per se, but only over their combination in order to solve the general circular convolution problem. In more detail:
+We need a number of less well-known techniques to make the strategy work in our setting. In more detail:
 \begin{itemize}
     \item \Cref{section:roots} finds and calculates a class of roots of unity compatible with both NTT application and arithmetic of the ring \(\Z_{p^m}\). The main idea is to find these roots in the Galois ring extension \(\GalRing{p^m}{r}\). For each \(r \ge 1\), there is a suitable root of unity of order \(p^r - 1\). We will see why such a root is appropriate and provide efficient algorithms to calculate the root.
     \item In \cref{section:padding} we briefly recall how to pad arguments so that we can transform a circular convolution problem of length \(N\) to one of a more convenient length \(N' > N\).
-    \item Efficient convolution and NTT is the main topic of \ToRef{Section 3}. We suggest 2 algorithms based on factorization characteristics of \(N'\)
+    \item Efficient convolution and NTT is the main topic of \cref{section:ntt}. We suggest 2 algorithms based on factorization characteristics of \(N'\)
     \begin{itemize}
         \item If \(N' = q^e\) is a power of a small prime \(q\), we take inspiration from \cite{ARXIV:Rosowski21} and propose an \(O(N \log N)\) recursion algorithm to compute the circular convolution without doing the fourier and inverse fourier transforms.
         \item If \(N' = N_1 N_2\) where \(N_1, N_2\) are coprime. We employ the Good-Thomas Prime Factorization technique \cite{JRSS:Good58,ADC:Thomas63} and reduce the calculation of length \(N'\) fourier transform to 2 consecutive block-wise length \(N_1\) and length \(N_2\) fourier transforms.
-        \item Finally, we combine the 2 methods above to handle those \(N'\) having factorization \(N' = q_1 \ldots q_{n-1} q_n^e\), where \(e \ge 1\) and \(q_1, \ldots, q_n\) are distinct small primes
+        \item Finally, we combine the 2 methods above to handle those \(N'\) having factorization \(N' = q_1 \ldots q_{n-1} q_n^e\), where \(e \ge 1\) and \(q_1, \ldots, q_n\) are distinct small primes.
     \end{itemize}
-    \item The last section contains some benchmark results of a proof-of-concept Sagemath/Python implementation of our strategy. We will also discuss the strengths and weaknesses; the time complexities; and the applications of our approach
+    \item The last section contains some benchmark results of a proof-of-concept Sagemath/Python implementation of our strategy. We will also discuss bottlenecks and possible improvements of our approach.
 \end{itemize}
 
 \paragraph{Applications}
