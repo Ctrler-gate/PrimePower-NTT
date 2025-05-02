@@ -38,7 +38,7 @@ We first present the simple and elegant method described in \cite{ARXIV:Rosowski
     \end{itemize}
     Then the multiplication of an \(f\)-circulant matrix \(\bm{A}\in \RingR^{N \times N}\) and a vector \(\bm{b} \in \RingR^N\) can be done with \(O(N \log N)\) ring operations using \cref{alg:Mult1}.
 \end{theorem}
-\begin{algorithm}
+\begin{algorithm}[h]
     \caption{CircMatMult: Multiply an \(f\)-circulant matrix with a vector}\label{alg:Mult1}
     \begin{algorithmic}[1]
         \Require \(f\)-circulant matrix \(\bm{A}\), input vector \(\bm{b}\), \(f\) and length \(N\)
@@ -118,7 +118,7 @@ We now propose a generalized version of the algorithm described in \cite{ARXIV:R
     \end{itemize}
     Then the multiplication of an \(f\)-circulant matrix \(\bm{A}\in \RingR^{N \times N}\) and a vector \(\bm{b} \in \RingR^N\) can be done with \(O(N \log N)\) ring operations using \cref{alg:Mult2}.
 \end{theorem}
-\begin{algorithm}
+\begin{algorithm}[h]
     \caption{GenCircMatMult: Multiply an \(f\)-circulant matrix with a vector}\label{alg:Mult2}
     \begin{algorithmic}[1]
         \Require \(f\)-circulant matrix \(\bm{A}\), input vector \(\bm{b}\), \(f\) and length \(N\)
@@ -212,3 +212,97 @@ We now propose a generalized version of the algorithm described in \cite{ARXIV:R
     We refer the reader to \cref{proof:CircMult2} in the appendix for a proof of \cref{thm:CircMult2}
 \end{proof}
 \fi
+
+\subsection{Coprime Factor Case}
+Suppose \(N = N_1 N_2\) where \(N_1, N_2\) are relatively prime. Good-Thomas Prime Factorization \cite{JRSS:Good58,ADC:Thomas63} is a technique to reduce the computation of fourier transform of length \(N\) to the computation of 2 dimensional fourier transform of dimension \(N_1 \times N_2\). In turn its computation can be facilitated by ``nesting'' a fast algorithm for 1 dimensionaal fourier transform inside another 1 dimensional fast algorithm. This factorization can also be repeated recursively and reduce the original computation to the computation of a multi-dimensional fourier transform.
+
+In the context of computing cyclic convolutions, we use a variant of Good-Thomas prime Factorization due to Agrawal and Cooley \cite{IEEE:AgrCoo77}. The main benefit of this approach is that it doesn't require additional roots of unity, thereby suitable to our setting where inexpensive roots of unity are scarce.
+
+We need the notion of a stride permutation.
+\begin{definition}{Stride Permutation}\label{def:Stride}
+    Assume \(N = N_1 N_2\) where \(N_1, N_2\) are relatively prime. Let \(0 < E_1, E_2 < N\) be unique integers satisfying:
+    \begin{align*}
+        E_1 &\equiv 1 \pmod{N_1} \quad &E_1 &\equiv 0 \pmod{N_2} \\
+        E_2 &\equiv 0 \pmod{N_1} \quad &E_2 &\equiv 1 \pmod{N_2}
+    \end{align*}
+    We will also call \(E_1, E_2\) the \emph{CRT basis} with respect to \(N=N_1 N_2\). Define the stride permutation associated with \(N\) as
+    \[\sigma:\: \{0,\ldots, N-1\} \to \{0, \ldots, N-1\} \qquad N_2 i + j \mapsto i E_1 + j E_2 \bmod N\]
+    For any \(0 \le i < N_1, 0 \le j < N_2\)
+\end{definition}
+
+\ifFullVersion
+\begin{example}
+    Suppose \(N = N_1 N_2 = 3 \times 4 = 12\), we can let \(E_1 = 4, E_2 = 9\). The stride permutation becomes:
+    \[\begin{pmatrix}
+        0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11\\ 
+        0 & 9 & 6 & 3 & 4 & 1 & 10 & 7 & 8 & 5 & 2 & 11
+    \end{pmatrix}\]
+\end{example}
+\fi
+
+\begin{proposition}\label{prop:GoodThomasDecomp}
+    Assume \(N = N_1 N_2\) where \(N_1, N_2\) are relatively prime. Let \(E_1, E_2\) be the CRT basis in \cref{def:Stride}. Let \(\bm{P} = \bm{P}_{\sigma}\), \(\bm{P}_{i,j} = \delta_{\sigma(i), j}\) for \(0 \le i,j < N\) be the (row)-circulant permutation matrix associated with the stride permutation in \cref{def:Stride}.
+    
+    Let \(\zeta_N\) be a principal \(N\textsuperscript{th}\) root of unity, and let \(\bm{V}_N\) denote the \(N \times N\) fourier matrix where \((\bm{V})_{i,j} = \zeta_N^{ij}\). Then
+    \begin{enumerate}
+        \item If we let \(\zeta_{N_1} \coloneq \zeta_N^{E_1}\), \(\zeta_{N_2} \coloneq \zeta_N^{E_2}\). Then \(\zeta_{N_1}, \zeta_{N_2}\) are resepctively principal \(N_1\textsuperscript{th}\) and \(N_2\textsuperscript{th}\) root of unity.
+        \item \(\bm{V}_N = \bm{P}^{-1} (\bm{V}_{N_1} \otimes \bm{V}_{N_2}) \bm{P}\), where \(\bm{V}_{N_1}, \bm{V}_{N_2}\) are fourier matrices associated with \(\zeta_{N_1}, \zeta_{N_2}\). \(\otimes\) denotes the matrix kronecker product.
+    \end{enumerate}
+\end{proposition}
+\begin{proof}
+    Item 1 of \cref{prop:GoodThomasDecomp} is obvious from the Chinese remainder theorem
+
+    For the second item of \cref{prop:GoodThomasDecomp}, we let \(\sigma: \{0,\ldots,N-1\} \to \{0,\ldots,N-1\}\) be the stride permutation with respect to \(N\) defined in \cref{def:Stride}. For each \(0 \le i,j < N\) there exist unique \(0 \le a_1, a_2 < N_1\), \(0 \le b_1,b_2 < N_2\) such that
+    \[i \equiv a_1 E_1 + b_1 E_2 \pmod{N} \qquad j \equiv a_2 E_1 + b_2 E_2 \pmod{N}\]
+    Therefore,
+    \begin{align*}
+        \left(\bm{P}^{-1} (\bm{V}_{N_1} \otimes \bm{V}_{N_2}) \bm{P}\right)_{i,j} &= \left(\bm{V}_{N_1} \otimes \bm{V}_{N_2}\right)_{\sigma^{-1}(i), \sigma^{-1}(j)} = \left(\bm{V}_{N_1} \otimes \bm{V}_{N_2}\right)_{a_1 N + b1, a_2 N + b_2} \\
+        &= (\bm{V}_{N_1})_{a_1, a_2} (\bm{V}_{N_2})_{b_1, b_2} = \zeta_N^{a_1 a_2 E_1 + b_1 b_2 E_2} = \zeta_N^{ij}
+    \end{align*}
+    Since by Chinese remainder theorem \(ij \equiv a_1 a_2 E_1 + b_1 b_2 E_2 \pmod{N}\)
+\end{proof}
+
+The following proposition describes the main idea of Agrawal Cooley algorithm. We refer the reader to \cite[Sect~7.2]{BOOK:LRTMAC89} for more detail.
+\begin{proposition}\label{prop:AgrawalCooley}
+    \begin{enumerate}
+        \item Under the assumption of \cref{prop:GoodThomasDecomp}, the inverse fourier matrix satisfies
+        \[ \bm{V}_N^{-1} = \bm{P}^{-1} \left(\bm{V}_{N_1}^{-1} \otimes \bm{V}_{N_2}^{-1}\right) \bm{P} \]
+        \item Let \(\bm{u}, \bm{v}\) be 2 vectors of length \(N\). Let \(bm{H}\) be the \(N \times N\) circulant matrix whose first column is \(\bm{u}\). Let \(\bm{w} = \bm{u} \circledast \bm{v} = \bm{H} \bm{v}\) be their circular convolution product. If \(\bm{P}\) is the stride permutation matrix as in \cref{prop:GoodThomasDecomp} Then \(\bm{P} \bm{w} = \left(\bm{P} \bm{H} \bm{P}^{-1}\right) \cdot \bm{P} \bm{v}\) and \(\bm{H}_1 = \bm{P} \bm{H} \bm{P}^{-1}\) is an \(N_1 \times N_1\) block circulant matrix, each block also a circulant matrix of dimension \(N_2 \times N_2\)
+        \item Hence the block fourier transform \(bm{H}_2 = \left(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\right) \bm{H}_1 \left(\bm{V}_{N_1}^{-1} \otimes \bm{I}_{N_2}\right)\) is a block diagonal matrix, each block an \(N_2 \times N_2\) circulant matrix
+        \item Finally, the fourier transform \(\bm{H}_3 = \left(\bm{I}_{N_1} \otimes \bm{V}_{N_2}\right) \bm{H}_2 \left(\bm{I}_{N_1} \otimes \bm{V}_{N_2}^{-1}\right)\) is a diagonal matrix
+    \end{enumerate}
+\end{proposition}
+\begin{proof}
+    Item 1 of \cref{prop:AgrawalCooley} is obtained from the well known mix product property of matrix tensor product.
+
+    The first part of item 2 of \cref{prop:AgrawalCooley} is obvious. We now prove that \(\bm{H}_1 = \bm{P} \bm{H} \bm{P}^{-1}\) has the desired property. For \(0 \le a_1, a_2 < N_1\), \(0 \le b_1, b_2 < N_2\) we need to show that
+    \[(\bm{H}_1)_{a_1 N_2 + b_1, a_2 N_2 + b_2} = (\bm{H}_1)_{0, (a_1 - a_2 \bmod N_1)N_2 + (b_2 - b_1 \bmod N_2)}\]
+    But
+    \begin{align*}
+        &(\bm{H}_1)_{a_1 N_2 + b_1, a_2 N_2 + b_2} = \bm{H}_{a_1 E_1 + b_1 E_2 \bmod N, a_2 E_1 + b_2 E_2 \bmod N} \\
+        &= \bm{u}_{(a_1 - a_2)E_1 + (b_2 - b_1)E_2 \bmod N} = (\bm{H}_1)_{0, (a_1 - a_2 \bmod N_1)N_2 + (b_2 - b_1 \bmod N_2)}
+    \end{align*}
+    The claim is proven.
+
+    Item 3 and 4 of \cref{prop:AgrawalCooley} are direct consequences of the fourier transform. \(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\) operates at block level and will transform a block-circulant matrix to a block-diagonal one. On the otherhand, \(\bm{I}_{N_1} \otimes \bm{V}_{N_2}\) operates parallel within each block, and will transform each circulant block into a diagonal block. 
+\end{proof}
+
+\Cref{{alg:GoodThomas}} instantiates the Good-Thomas Prime Factorization strategy. The correctness follows directly from \cref{prop:AgrawalCooley}.
+\begin{algorithm}[h]
+    \caption{Good-Thomas Prime Factorization}\label{alg:GoodThomas}
+    \begin{algorithmic}[1]
+        \Require 2 length \(N\) sequences \(\bm{u}, \bm{v}\)
+        \Ensure Their circular convolution product \(\bm{w} = \bm{u} \circledast \bm{v}\)
+        \State Break \(N = N_1 N_2\) into 2 coprime factors. Find the CRT basis \(E_1, E_2\) and stride permutation matrix \(bm{P}\) as in \cref{prop:GoodThomasDecomp}.
+        \State Permute the inputs \(\bm{u}_1 = \bm{P} \bm{u}\), \(\bm{v}_1 = \bm{P} \bm{v}\)
+        \State Calculate the block fourier transforms:
+        \[ \bm{u}_2 = \left(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\right) \bm{u}_1, \qquad \bm{v}_2 = \left(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\right) \bm{v}_1\] 
+        \Comment{This step can be recursively computed if we can break up \(N_1\) to coprime factors}
+        \State Break \(\bm{u}_2 = (\bm{u}_2^{(0)} \parallel \ldots \parallel \bm{u}_2^{(N_1 - 1)})\), \(\bm{v}_2 = (\bm{u}_v^{(0)} \parallel \ldots \parallel \bm{u}_v^{(N_1 - 1)})\) into \(N_1\) consecutive blocks
+        \For {each pair \(\bm{u}_2^{(i)}, \bm{v}_2^{(i)}\)}
+            \State Calculate \(\bm{w}_2^{(i)} = \bm{u}_2^{(i)} \circledast \bm{v}_2^{(i)}\) \Comment{This step can also be recursively computed if we can break up \(N_2\) to coprime factors}
+        \EndFor
+        \State Let \(\bm{w}_2 = (\bm{w}_2^{(0)} \parallel \ldots \parallel \bm{w}_2^{N_1 - 1})\). Calculate the inverse block fourier transform \(\bm{w}_1 = \left(\bm{V}_{N_1}^{-1} \otimes \bm{I}_{N_2}\right) \bm{w}_2\)
+        \State {\bf Return} \(\bm{w} = \bm{P}^{-1} \bm{w}_1\)
+    \end{algorithmic}
+\end{algorithm}

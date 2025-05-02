@@ -29,7 +29,7 @@ Though elegant, classical NTT imposes significant restrictions on the modulus an
 
 This paper considers this general question and focuses on prime power modulus \(p^m\) and arbitrary length. We are mostly interested in a very small prime \(p\): the most interesting case is \(p = 2\), since this is the default base in most modern computer architectures.
 
-To the best of our knowledge, one of the most effective, practical and generic solution to the arbirary modulus, arbitrary length problem makes use of multimodular NTT, a combination of classical NTT with Residue Number System and Chinese Remainder Theorem. See for example \cite{JSC:Shoup95} Sect.6. We refer the reader to the related work section for a brief overview of this strategy.
+To the best of our knowledge, one of the most effective, practical and generic solution to the arbirary modulus, arbitrary length problem makes use of multimodular NTT, a combination of classical NTT with Residue Number System and Chinese Remainder Theorem. See for example \cite[Sect~6]{JSC:Shoup95}. We refer the reader to the related work section for a brief overview of this strategy.
 
 \paragraph{Our perspectives}
 In the multimodular approach, we must lift both arguments to \emph{integer sequences} and solve the integer circular convolution problem. Apart from bounding the size of the final result, the initial modulus plays almost no role in the multimodular NTT algorithm. This paper explores whether we can use NTT in a modulus-aware fashion. Namely
