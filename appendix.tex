@@ -69,9 +69,43 @@
     \begin{align*}
         (\bm{M}_k)_{i,j} &= \sum_{l=0}^{B-1}r^l \omega^{kl} \bm{A}_{i, \frac{N}{B}l + j}= f a_{N + j - i} + \sum_{l=1}^{B-1}r^l \omega^{kl} a_{\frac{N}{B}l + j - i} \\
         &= \omega^k r \left(\sum_{l=0}^{B-2} r^l \omega^{kl} a_{\frac{N}{B} + \frac{N}{B}l + j - i}\right) + \omega^k r \left(r^{B-1} \omega^{k(B-1) a_{\frac{N}{B} + \frac{(B-1)N}{B}+j-i}}\right) \\
-        &= \omega^k r (\alpha_{\frac{N}{B} + j - i})
+        &= \omega^k r \left(\alpha_{\frac{N}{B} + j - i}\right)
     \end{align*}
     Therefore \(\bm{M}_k\) is an \(\omega^k r\)-circulant matrix.
 
     Finally, the divide an conquer nature of the algorithm implies that the time complexity of \cref{alg:Mult2} is \(O(N \log N)\).
+\end{ext_proof}
+
+\paragraph{\bf Proof of \cref{prop:TensorPrimeFactor}}
+\begin{ext_proof} \label{proof:TensorPrimeFactor}
+    We use induction on the number of coprime factors \(n\) of \(N\).
+
+    If \(n = 2,\, N = q_1 q_2^e\). Let \(N_1 = q_1\), \(N_2 = q_2^e\), \(\bm{P}_1\) the stride permutation matrix with respect to \(N = N_1 N_2\). Item 1 to 3 in \cref{prop:AgrawalCooley} implies
+    \begin{align*}
+        &\left(\bm{V}_{q_1} \otimes \bm{I}_{q_2^e}\right) \bm{P}_1 \bm{w} \\
+        &= \left(\bm{V}_{q_1} \otimes \bm{I}_{q_2^e}\right) \left(\bm{P}_1 \bm{H} \bm{P}_1^{-1}\right) \left(\bm{V}_{q_1}^{-1} \otimes \bm{I}_{q_2^e}\right) \cdot \left(\bm{V}_{q_1} \otimes \bm{I}_{q_2^e}\right) \bm{P}_1 \bm{v} \\
+        &\implies \bm{V}_{(2)} \bm{w} = \left(\bm{V}_{(2)} \bm{H} \bm{V}_{(2)}^{-1}\right) \cdot \bm{V}_{(2)} \bm{v}
+    \end{align*}
+    And that \(\bm{V}_{(2)} \bm{H} \bm{V}_{(2)}^{-1}\) is a block-diagnonal matrix, each block a circulant matrix of dimension \(q_2^e \times q_2^e\). This proves the base case.
+
+    Assume the assumption holds for the number of coprime factors \(1, 2 \ldots n\). Now if \(N = q_1 q_2 \ldots q_n q_{n+1}^e\), we can also write \(N = q_1 q_2 \ldots q_{n-1} Q_n\), where \(Q_n = q_n q_{n+1}^e\). By inductive hypothesis: \(\bm{V}_{(n)} \bm{w} = \left(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\right) \cdot \bm{V}_{(n)} \bm{v}\), where \(\bm{V}_{(n)}\) is as in \cref{prop:TensorPrimeFactor} except we replace \(\bm{I}_{q_n^e}\) by \(\bm{I}_{Q_n}\). Again by inductive hypothesis \(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\) is a block-diagonal matix, each block a circulant matrix of dimension \(Q_n \times Q_n\).
+
+    Again Item 1 to 3 in \cref{prop:AgrawalCooley} says that for \(Q_n = q_n q_{n+1}^e\), \(P_n\) the stride permutation matrix with respect to the factorization \(Q_n = q_n q_{n+1}^e\), and for any \(Q_n \times Q_n\) circulant matrix \(\bm{U}\):
+    \[\left(\bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{P}_n \bm{U} \bm{P}_n^{-1}\right) \left(\bm{V}_{q_n}^{-1} \otimes \bm{I}_{q_{n+1}^e}\right)\]
+    is a block-diagnoal matrix, each block is circulant of dimension \(q_{n+1}^e \times q_{n+1}^e\).
+
+    Apply this operator to each circulant block within \(\bm{V}_{(n)}\), we obtain
+    \begin{multline*}
+        \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n\right) \left(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\right) \\
+        \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n^{-1}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n}^{-1} \bm{I}_{q_{n+1}^e}\right)
+    \end{multline*}
+    is a block diagonal matrix, each block circulant of dimension \(q_{n+1}^e \times q_{n+1}^e\). But
+    \begin{align*}
+        &\left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n\right) \bm{V}_{(n)} \\
+        &= \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n\right) \left(\bm{V}_{q_1} \otimes \bm{V}_{q_2} \otimes \ldots \otimes \bm{V}_{q_{n-1}} \otimes \bm{I}_{Q_n}\right) \\
+        &\left(\bm{I}_{N_{n-2}} \otimes \bm{P}_{n-1}\right) \dots \left(\bm{I}_{N_1} \otimes \bm{P}_2\right) \bm{P}_1 \\
+        &= \left(\bm{V}_{q_1} \otimes \ldots \otimes \bm{V}_{q_{n}} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{N_{n-1}} \otimes \bm{P}_n\right) \dots \left(\bm{I}_{N_1} \otimes \bm{P}_2\right) \bm{P}_1 \\
+        &= \bm{V}_{(n+1)}
+    \end{align*}
+    where \(N_{n-1} = q_1 q_2 \ldots q_n\) and \(Q_n = q_n q_{n+1}^e\). In addition, we use the mix product property of tensor products to move around and combine the components in order to obtain the second last equality. This proves the induction step.
 \end{ext_proof}

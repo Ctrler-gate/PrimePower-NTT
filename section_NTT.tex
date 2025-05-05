@@ -15,9 +15,9 @@ These 2 examples suggest that a pure-radix strategy is not generally applicable 
     \item The second algorithm is essentially the Good-Thomas Prime Factorization algorithm~\cite{JRSS:Good58,ADC:Thomas63}. If the length \(N = N_1 N_2\) can be factored into coprime factors, this method reduces the computation of length \(N\) fourier transform to computations of block-wise fourier transforms of length \(N_1\) and \(N_2\)
 \end{enumerate}
 
-In \ToRef{Combination} the 2 algorithms above are combined to handle smooth convolution length \(N = q_1 q_2 \ldots q_{n-1} q_n^e\) where \(q_1, \ldots, q_n\) are small primes and \(e \ge 1\).
+In \cref{subsection:combination} the 2 algorithms above are combined to handle smooth convolution length \(N = q_1 q_2 \ldots q_{n-1} q_n^e\) where \(q_1, \ldots, q_n\) are small primes and \(e \ge 1\).
 
-\subsection{Prime Power Case}
+\subsection{Prime Power Case} \label{subsection:primePower}
 First we recall the notion of an \(f\)-circulant matrix.
 \begin{definition}{\(f\)-circulant matrix} \label{def:CircMat}
     Let \(\expdVec{a}{N}\) be a sequence and \(f\) a number. The \(f\)-circulant matrix associated with \(\expdVec{a}{N}\) is an \(N \times N\) matrix \(\bm{A}\) satisfying:
@@ -118,6 +118,7 @@ We now propose a generalized version of the algorithm described in \cite{ARXIV:R
     \end{itemize}
     Then the multiplication of an \(f\)-circulant matrix \(\bm{A}\in \RingR^{N \times N}\) and a vector \(\bm{b} \in \RingR^N\) can be done with \(O(N \log N)\) ring operations using \cref{alg:Mult2}.
 \end{theorem}
+
 \begin{algorithm}[h]
     \caption{GenCircMatMult: Multiply an \(f\)-circulant matrix with a vector}\label{alg:Mult2}
     \begin{algorithmic}[1]
@@ -155,7 +156,7 @@ We now propose a generalized version of the algorithm described in \cite{ARXIV:R
         \bm{c}_i &= \left(B r^{B-1-i}\right)^{-1} \sum_{j=0}^{B-1} \omega^{ij} \bm{e}_j \\
         &=  \left(B r^{B-1-i}\right)^{-1} \sum_{j=0}^{B-1} \left( \omega^{ij} \left(\sum_{k=0}^{B-1}r^k \omega^{kj} \bm{A}_k\right) \left(\sum_{l=0}^{B-1}r^{B-1-l} \omega^{-lj} \bm{b}_l\right)\right) \\
         &= B^{-1} \sum_{j,k,l} r^{i+k-l} \omega^{j(i+k-l)} \bm{A}_k \bm{b}_l = \sum_{k,l}r^{i+k-l} \bm{A}_k \bm{b}_l \cdot B^{-1}\sum_j \omega^{j(i+k-l)} \\
-        &= \sum_{k,l} r^{i+k-l} \bm{A}_k \bm{b}_l \cdot [l \equiv i + k \pmod{B}]= \sum_{k=0}^{B-1-i} \bm{A}_k \bm{b}_{i+k} + \sum_{k=B-i}^{B-1}f \bm{A}_k \bm{b}_{i+k-B}
+        &= \sum_{k,l} r^{i+k-l} \bm{A}_k \bm{b}_l \cdot [l \equiv i + k \pmod{B}]= \sum_{k=0}^{B-i-1} \bm{A}_k \bm{b}_{i+k} + \sum_{k=B-i}^{B-1}f \bm{A}_k \bm{b}_{i+k-B}
     \end{align*}
     The final expression is exactly the \(i\textsuperscript{th}\) block of the product \(\bm{A} \bm{b}\)
 
@@ -178,7 +179,7 @@ We now propose a generalized version of the algorithm described in \cite{ARXIV:R
     \begin{align*}
         (\bm{M}_k)_{i,j} &= \sum_{l=0}^{B-1}r^l \omega^{kl} \bm{A}_{i, \frac{N}{B}l + j}= f a_{N + j - i} + \sum_{l=1}^{B-1}r^l \omega^{kl} a_{\frac{N}{B}l + j - i} \\
         &= \omega^k r \left(\sum_{l=0}^{B-2} r^l \omega^{kl} a_{\frac{N}{B} + \frac{N}{B}l + j - i}\right) + \omega^k r \left(r^{B-1} \omega^{k(B-1) a_{\frac{N}{B} + \frac{(B-1)N}{B}+j-i}}\right) \\
-        &= \omega^k r (\alpha_{\frac{N}{B} + j - i})
+        &= \omega^k r \left(\alpha_{\frac{N}{B} + j - i}\right)
     \end{align*}
     Therefore \(\bm{M}_k\) is an \(\omega^k r\)-circulant matrix.
 
@@ -206,20 +207,25 @@ We now propose a generalized version of the algorithm described in \cite{ARXIV:R
         \bm{c}_1 &= \frac{\bm{e}_0 + \omega \bm{e}_1 + \omega^2 \bm{e}_2}{3r} \\
         \bm{c}_1 &= \frac{\bm{e}_0 + \omega^2 \bm{e}_1 + \omega \bm{e}_2}{3}
     \end{align*}
+    The final result is \(\bm{c} = (\bm{c}_0 \parallel \bm{c}_1 \parallel \bm{c}_2)^{\top}\)
 \end{example}
 \else
 \begin{proof}
-    We refer the reader to \cref{proof:CircMult2} in the appendix for a proof of \cref{thm:CircMult2}
+    The highlevel idea is to verify the following: 1. assume the recursion step is correct, the algorithm produces the correct output; 2. that the intermediate matrix \(\bm{M}_i\) is \(\omega^i r\)-circulant, hence the recursion step is correct. We refer the reader to \cref{proof:CircMult2} in the appendix for a detailed proof of \cref{thm:CircMult2}.
 \end{proof}
 \fi
 
-\subsection{Coprime Factor Case}
+\begin{remark}
+    Since \(\bm{A}\) is circulant and each block \(\bm{A}_i\) in \cref{alg:Mult2} is also circulant, it is enough to store only the first row/column of the matrices. Similarly, when we compute the matrices \(\bm{M}_i\), it is sufficient to operate on the first row/column of each \(\bm{A}_i\).
+\end{remark}
+
+\subsection{Coprime Factor Case} \label{subsection:coprime}
 Suppose \(N = N_1 N_2\) where \(N_1, N_2\) are relatively prime. Good-Thomas Prime Factorization \cite{JRSS:Good58,ADC:Thomas63} is a technique to reduce the computation of fourier transform of length \(N\) to the computation of 2 dimensional fourier transform of dimension \(N_1 \times N_2\). In turn its computation can be facilitated by ``nesting'' a fast algorithm for 1 dimensionaal fourier transform inside another 1 dimensional fast algorithm. This factorization can also be repeated recursively and reduce the original computation to the computation of a multi-dimensional fourier transform.
 
 In the context of computing cyclic convolutions, we use a variant of Good-Thomas prime Factorization due to Agrawal and Cooley \cite{IEEE:AgrCoo77}. The main benefit of this approach is that it doesn't require additional roots of unity, thereby suitable to our setting where inexpensive roots of unity are scarce.
 
 We need the notion of a stride permutation.
-\begin{definition}{Stride Permutation}\label{def:Stride}
+\begin{definition}{(Stride Permutation)}\label{def:Stride}
     Assume \(N = N_1 N_2\) where \(N_1, N_2\) are relatively prime. Let \(0 < E_1, E_2 < N\) be unique integers satisfying:
     \begin{align*}
         E_1 &\equiv 1 \pmod{N_1} \quad &E_1 &\equiv 0 \pmod{N_2} \\
@@ -243,7 +249,7 @@ We need the notion of a stride permutation.
 \begin{proposition}\label{prop:GoodThomasDecomp}
     Assume \(N = N_1 N_2\) where \(N_1, N_2\) are relatively prime. Let \(E_1, E_2\) be the CRT basis in \cref{def:Stride}. Let \(\bm{P} = \bm{P}_{\sigma}\), \(\bm{P}_{i,j} = \delta_{\sigma(i), j}\) for \(0 \le i,j < N\) be the (row)-circulant permutation matrix associated with the stride permutation in \cref{def:Stride}.
     
-    Let \(\zeta_N\) be a principal \(N\textsuperscript{th}\) root of unity, and let \(\bm{V}_N\) denote the \(N \times N\) fourier matrix where \((\bm{V})_{i,j} = \zeta_N^{ij}\). Then
+    Let \(\zeta_N\) be a principal \(N\textsuperscript{th}\) root of unity, and let \(\bm{V}_N\) denote the \(N \times N\) fourier matrix where \((\bm{V}_N)_{i,j} = \zeta_N^{ij}\). Then
     \begin{enumerate}
         \item If we let \(\zeta_{N_1} \coloneq \zeta_N^{E_1}\), \(\zeta_{N_2} \coloneq \zeta_N^{E_2}\). Then \(\zeta_{N_1}, \zeta_{N_2}\) are resepctively principal \(N_1\textsuperscript{th}\) and \(N_2\textsuperscript{th}\) root of unity.
         \item \(\bm{V}_N = \bm{P}^{-1} (\bm{V}_{N_1} \otimes \bm{V}_{N_2}) \bm{P}\), where \(\bm{V}_{N_1}, \bm{V}_{N_2}\) are fourier matrices associated with \(\zeta_{N_1}, \zeta_{N_2}\). \(\otimes\) denotes the matrix kronecker product.
@@ -293,16 +299,173 @@ The following proposition describes the main idea of Agrawal Cooley algorithm. W
     \begin{algorithmic}[1]
         \Require 2 length \(N\) sequences \(\bm{u}, \bm{v}\)
         \Ensure Their circular convolution product \(\bm{w} = \bm{u} \circledast \bm{v}\)
-        \State Break \(N = N_1 N_2\) into 2 coprime factors. Find the CRT basis \(E_1, E_2\) and stride permutation matrix \(bm{P}\) as in \cref{prop:GoodThomasDecomp}.
+        \State Break \(N = N_1 N_2\) into 2 coprime factors. Find the CRT basis \(E_1, E_2\) and stride permutation matrix \(\bm{P}\) as in \cref{prop:GoodThomasDecomp}.
         \State Permute the inputs \(\bm{u}_1 = \bm{P} \bm{u}\), \(\bm{v}_1 = \bm{P} \bm{v}\)
         \State Calculate the block fourier transforms:
         \[ \bm{u}_2 = \left(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\right) \bm{u}_1, \qquad \bm{v}_2 = \left(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\right) \bm{v}_1\] 
         \Comment{This step can be recursively computed if we can break up \(N_1\) to coprime factors}
-        \State Break \(\bm{u}_2 = (\bm{u}_2^{(0)} \parallel \ldots \parallel \bm{u}_2^{(N_1 - 1)})\), \(\bm{v}_2 = (\bm{u}_v^{(0)} \parallel \ldots \parallel \bm{u}_v^{(N_1 - 1)})\) into \(N_1\) consecutive blocks
+        \State Break \(\bm{u}_2 = (\bm{u}_2^{(0)} \parallel \ldots \parallel \bm{u}_2^{(N_1 - 1)})^{\top}\), \(\bm{v}_2 = (\bm{u}_v^{(0)} \parallel \ldots \parallel \bm{u}_v^{(N_1 - 1)})^{\top}\) into \(N_1\) consecutive blocks
         \For {each pair \(\bm{u}_2^{(i)}, \bm{v}_2^{(i)}\)}
             \State Calculate \(\bm{w}_2^{(i)} = \bm{u}_2^{(i)} \circledast \bm{v}_2^{(i)}\) \Comment{This step can also be recursively computed if we can break up \(N_2\) to coprime factors}
         \EndFor
-        \State Let \(\bm{w}_2 = (\bm{w}_2^{(0)} \parallel \ldots \parallel \bm{w}_2^{N_1 - 1})\). Calculate the inverse block fourier transform \(\bm{w}_1 = \left(\bm{V}_{N_1}^{-1} \otimes \bm{I}_{N_2}\right) \bm{w}_2\)
+        \State Let \(\bm{w}_2 = (\bm{w}_2^{(0)} \parallel \ldots \parallel \bm{w}_2^{N_1 - 1})^{\top}\). Calculate the inverse block fourier transform \(\bm{w}_1 = \left(\bm{V}_{N_1}^{-1} \otimes \bm{I}_{N_2}\right) \bm{w}_2\)
         \State {\bf Return} \(\bm{w} = \bm{P}^{-1} \bm{w}_1\)
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Combining the 2 strategies} \label{subsection:combination}
+When we search for smooth divisors of \(p^r - 1\) where \(p\) is a small prime and \(r>0\) a small integer, we find that such factor \(N \mid p^r - 1\) frequently factorizes as \(N = q_1 q_2 \ldots q_{n-1} q_n^e\), \(q_1 \ldots q_n\) distinct primes. When such case occurs, it is possible to combine both strategies in \cref{subsection:coprime,subsection:primePower}. 
+
+The highlevel idea is to first use Good-Thomas Prime Factorization and the block fourier matrices to convert the length \(N\) convolution respectively to a length \(q_1\), length \(q_1 q_2\), etc. length \(q_1 \ldots q_{n-1}\) block-wise convolution. For each block in the last step, which has size \(q_n^e \times q_n^e\), we employ \cref{alg:Mult2} to calculate the convolution. Finally, we use a series of inverse block fourier matrices associated with Good-Thomas Prime Factorization to obtain the final result.
+
+A more precise mathematical expression of the procedure above is given by \cref{prop:TensorPrimeFactor}.
+\begin{proposition} \label{prop:TensorPrimeFactor}
+    Suppose \(N = q_1 \ldots q_{n-1} q_n^e\) where \(e > 0\) and \(q_1 \ldots q_n\) are distinct primes. Define
+    \begin{alignat*}{5}
+        &N_0 = 1, \quad &N_1 = q_1, \quad &N_2 = q_1 q_2, \quad &\dots, \quad &N_{n-1} = q_1 q_2\ldots q_{n-1} \\
+        &M_0 = N, \quad &M_1 = N / q_1, \quad &M_2 = N / q_1 q_2, \quad &\dots, \quad &M_{n-1} = N / q_1 \ldots q_{n-1}
+    \end{alignat*}
+    For \(1 \le i \le n-1\) also let \(\bm{P}_i\) be the stride permutation matrix with respect to the factorization \(M_{i-1}=  q_i M_i\) (see \cref{def:Stride}). Define
+    \begin{multline*}
+        \bm{V}_{(n)} \coloneq \left(\bm{V}_{q_1} \otimes \bm{V}_{q_2} \otimes \ldots \otimes \bm{V}_{q_{n-1}} \otimes \bm{I}_{q_n^e}\right) \left(\bm{I}_{N_{n-2}} \otimes \bm{P}_{n-1}\right) \left(\bm{I}_{N_{n-3}} \otimes \bm{P}_{n-2}\right) \\ 
+        \ldots \left(\bm{I}_{N_1} \otimes \bm{P}_2\right) \bm{P}_1
+    \end{multline*}
+    where \(\bm{V}_{q_i}\) is the fourier (Vandermonde) matrix of dimension \(q_i \times q_i\) with respect to the Good-Thomas prime factorization \(M_{i-1} = q_i M_i\) (\(q_i\) plays the role of \(N_1\) in \cref{prop:GoodThomasDecomp}).
+
+    Let \(\bm{u}, \bm{v}\) be 2 length \(N\) sequences, \(\bm{H}\) the circulant matrix whose first column is \(\bm{u}\). Let their circular convolution \(\bm{w} = \bm{u} \circledast \bm{v} = \bm{H} \bm{v}\), then
+    \[\bm{V}_{(n)} \bm{w} = \left(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\right) \cdot \bm{V}_{(n)}\bm{v}\]
+    And \(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\) is a block-diagonal matrix, with \(N_{n-1} = q_1 \ldots q_{n-1}\) blocks and each block a circulant matrix of dimension \(q_n^e \times q_n^e\).
+\end{proposition}
+\ifFullVersion
+\begin{proof}
+    We prove \cref{prop:TensorPrimeFactor} by induction on the number of coprime factors \(n\) of \(N\).
+
+    If \(n = 2,\, N = q_1 q_2^e\). Let \(N_1 = q_1\), \(N_2 = q_2^e\), \(\bm{P}_1\) the stride permutation matrix with respect to \(N = N_1 N_2\). Item 1 to 3 in \cref{prop:AgrawalCooley} implies
+    \begin{align*}
+        &\left(\bm{V}_{q_1} \otimes \bm{I}_{q_2^e}\right) \bm{P}_1 \bm{w} \\
+        &= \left(\bm{V}_{q_1} \otimes \bm{I}_{q_2^e}\right) \left(\bm{P}_1 \bm{H} \bm{P}_1^{-1}\right) \left(\bm{V}_{q_1}^{-1} \otimes \bm{I}_{q_2^e}\right) \cdot \left(\bm{V}_{q_1} \otimes \bm{I}_{q_2^e}\right) \bm{P}_1 \bm{v} \\
+        &\implies \bm{V}_{(2)} \bm{w} = \left(\bm{V}_{(2)} \bm{H} \bm{V}_{(2)}^{-1}\right) \cdot \bm{V}_{(2)} \bm{v}
+    \end{align*}
+    And that \(\bm{V}_{(2)} \bm{H} \bm{V}_{(2)}^{-1}\) is a block-diagnonal matrix, each block a circulant matrix of dimension \(q_2^e \times q_2^e\). This proves the base case.
+
+    Assume the assumption holds for the number of coprime factors \(1, 2 \ldots n\). Now if \(N = q_1 q_2 \ldots q_n q_{n+1}^e\), we can also write \(N = q_1 q_2 \ldots q_{n-1} Q_n\), where \(Q_n = q_n q_{n+1}^e\). By inductive hypothesis: \(\bm{V}_{(n)} \bm{w} = \left(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\right) \cdot \bm{V}_{(n)} \bm{v}\), where \(\bm{V}_{(n)}\) is as in \cref{prop:TensorPrimeFactor} except we replace \(\bm{I}_{q_n^e}\) by \(\bm{I}_{Q_n}\). Again by inductive hypothesis \(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\) is a block-diagonal matix, each block a circulant matrix of dimension \(Q_n \times Q_n\).
+
+    Again Item 1 to 3 in \cref{prop:AgrawalCooley} says that for \(Q_n = q_n q_{n+1}^e\), \(P_n\) the stride permutation matrix with respect to the factorization \(Q_n = q_n q_{n+1}^e\), and for any \(Q_n \times Q_n\) circulant matrix \(\bm{U}\):
+    \[\left(\bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{P}_n \bm{U} \bm{P}_n^{-1}\right) \left(\bm{V}_{q_n}^{-1} \otimes \bm{I}_{q_{n+1}^e}\right)\]
+    is a block-diagnoal matrix, each block is circulant of dimension \(q_{n+1}^e \times q_{n+1}^e\).
+
+    Apply this operator to each circulant block within \(\bm{V}_{(n)}\), we obtain
+    \begin{multline*}
+        \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n\right) \left(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\right) \\
+        \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n^{-1}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n}^{-1} \bm{I}_{q_{n+1}^e}\right)
+    \end{multline*}
+    is a block diagonal matrix, each block circulant of dimension \(q_{n+1}^e \times q_{n+1}^e\). But
+    \begin{align*}
+        &\left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n\right) \bm{V}_{(n)} \\
+        &= \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n\right) \left(\bm{V}_{q_1} \otimes \bm{V}_{q_2} \otimes \ldots \otimes \bm{V}_{q_{n-1}} \otimes \bm{I}_{Q_n}\right) \\
+        &\left(\bm{I}_{N_{n-2}} \otimes \bm{P}_{n-1}\right) \dots \left(\bm{I}_{N_1} \otimes \bm{P}_2\right) \bm{P}_1 \\
+        &= \left(\bm{V}_{q_1} \otimes \ldots \otimes \bm{V}_{q_{n}} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{N_{n-1}} \otimes \bm{P}_n\right) \dots \left(\bm{I}_{N_1} \otimes \bm{P}_2\right) \bm{P}_1 \\
+        &= \bm{V}_{(n+1)}
+    \end{align*}
+    where \(N_{n-1} = q_1 q_2 \ldots q_n\) and \(Q_n = q_n q_{n+1}^e\). In addition, we use the mix product property of tensor products to move around and combine the components in order to obtain the second last equality. This proves the induction step.
+\end{proof}
+\else
+\begin{proof}
+    The proof follows from a straightforward induction on the number of distinct prime factors \(n\) in the factorization \(N = q_1 \ldots q_{n-1} q_n^e\). We refer the reader to \cref{proof:TensorPrimeFactor} in the appendix for a detailed proof of \cref{prop:TensorPrimeFactor}.
+\end{proof}
+\fi
+
+We briefly recall that the tensor product matrix \(\bm{V}_{q_1} \otimes \ldots \otimes \bm{V}_{q_{n-1}} \otimes \bm{I}_{q_n^e}\) can be decomposed into a series of block-wise operations peppered with suitable permutations. We refer the reader to \cite[Chapter~2]{BOOK:LRTMAC89} for more detail and background.
+
+\begin{definition} \label{def:InterchangePerm}
+    Let \(M, N > 0\), we define the \emph{tensor interchange permutation}
+    \begin{align*}
+        \tau:\: \{0, 1, \ldots, MN-1\} &\to \{0, 1, \ldots, MN- 1\} \\
+        \forall 0 \le a < M, 0 \le b < N:\qquad aN + b &\mapsto bM + a
+    \end{align*}
+    We will let \(\bm{Q} = \bm{Q}_{\tau}\), \(\left(\bm{Q}\right)_{i,j} = \delta_{\tau(i), j}\) be the (row)-permutation matrix associated with \(\tau\).
+\end{definition}
+
+\begin{proposition} \label{prop:TensorInterchange}
+    Let \(M, N > 0\), \(\bm{A}\) an \(M \times M\) matrix and \(\bm{B}\) an \(N \times N\) matrix. Using the notation in \cref{def:InterchangePerm}, we have:
+    \[\bm{A} \otimes \bm{B} = \bm{Q}^{-1} \left(\bm{B} \otimes \bm{A}\right) \bm{Q}\]
+\end{proposition}
+\begin{proof}
+    Let \(i = a_1 N + b_1\), \(j = a_2 N + b_2\) where \(0 \le a_1, a_2 < M\), \(0 \le b_1, b_2 < N\). Then
+    \begin{align*}
+        &\left(\bm{Q}^{-1} \left(\bm{B} \otimes \bm{A}\right) \bm{Q}\right)_{i,j} = \left(\bm{B} \otimes \bm{A}\right)_{\tau(i), \tau(j)} = \left(\bm{B} \otimes \bm{A}\right)_{b_1 M + a_1, b_2 M + a_2} = \bm{B}_{b_1, b_2} \bm{A}_{a_1, a_2} \\
+        &= \left(\bm{A} \otimes \bm{B}\right)_{a_1 N + b_1, a_2 N + b_2} = \left(\bm{A} \otimes \bm{B}\right)_{i,j}
+    \end{align*}
+\end{proof}
+
+\begin{corollary} \label{cor:TensorPrimeInterchange}
+    Under the notation of \cref{def:InterchangePerm}, \cref{prop:TensorPrimeFactor,prop:TensorInterchange}.
+    \begin{enumerate}
+        \item \(\bm{V}_{q_1} \otimes \ldots \otimes \bm{V}_{q_{n-1}} \otimes \bm{I}_{q_n^e} = \prod_{i=1}^{n-1} \left(\bm{I}_{N_{i-1}} \otimes \bm{V}_{q_i} \otimes \bm{I}_{M_i}\right)\)
+        \item Let \(\bm{Q}_i\) denote the tensor product interchange permutation matrix between a \(N_{i-1} \times N_{i-1}\) and a \(q_i \times q_i\) matrix (see \cref{def:InterchangePerm}). Then
+            \begin{align*}
+                & \bm{V}_{q_1} \otimes \ldots \otimes \bm{V}_{q_{n-1}} \otimes \bm{I}_{q_n^e}
+                = \prod_{i=1}^{n-1} \left(\left(\bm{Q}_i \left(\bm{V}_{q_i} \otimes \bm{I}_{N_{i-1}}\right)\right) \otimes \bm{I}_{M_i}\right) \\
+                &= \prod_{i=1}^{n-1} \left( \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \left(\bm{V}_{q_i} \otimes \bm{I}_{N/q_i}\right) \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right)\right)
+            \end{align*}
+        \item Let \(\bm{Q}'_i\) denote the tensor product interchange permutation matrix between a \(q_i \times q_i\) and a \(M_i \times M_i\) matrix (see \cref{def:InterchangePerm}). Then
+            \begin{align*}
+                & \bm{V}_{q_1} \otimes \ldots \otimes \bm{V}_{q_{n-1}} \otimes \bm{I}_{q_n^e}
+                = \prod_{i=1}^{n-1} \left( \bm{I}_{N_{i-1}} \otimes \left(\bm{Q}'_i \left(\bm{I}_{M_i} \otimes \bm{V}_{q_i}\right) \bm{Q}_i^{'-1}\right)\right) \\
+                &= \prod_{i=1}^{n-1} \left(\left(\bm{I}_{N_{i-1}} \otimes \bm{Q}'_i\right) \left(\bm{I}_{N/q_i} \otimes \bm{V}_{q_i}\right) \left(\bm{I}_{N_{i-1}} \otimes \bm{Q}_i^{'-1}\right)\right)
+            \end{align*}
+    \end{enumerate}
+\end{corollary}
+\begin{proof}
+    Item 1 is a direct consequence of mixed product property of tensor products. Item 2 and 3 follow from \cref{prop:TensorInterchange}.
+\end{proof}
+
+Finally, \cref{alg:PrimePowerConvolution} shows one way to instantiate the combined strategy. Correctness follows immediately from \cref{prop:TensorInterchange,cor:TensorPrimeInterchange}.
+\begin{algorithm}[h]
+    \caption{Circular Convolution over prime power} \label{alg:PrimePowerConvolution}
+    \begin{algorithmic}[1]
+        \Require Length \(N = q_1 \ldots q_{n-1} q_n^e\), where \(q_1\ldots q_n\) are distinct small primes; 2 length \(N\) sequences \(\bm{u}, \bm{v}\); a principal \(N\textsuperscript{th}\) root of unity \(\zeta_N\)
+        \Ensure Circular convolution \(\bm{w} = \bm{u} \circledast \bm{v}\)
+        \State Compute the permutation
+        \[\bm{P} = \left(\bm{I}_{N_{n-1}} \otimes \bm{P}_{n-1}\right) \left(\bm{I}_{N_{n-3}} \otimes \bm{P}_{n-2}\right) \ldots \left(\bm{I}_{N_1} \otimes \bm{P}_2\right) \bm{P}_1\]
+        where \(N_1, \ldots , N_{n-2}\) and \(\bm{P}_1, \ldots , \bm{P}_{N_{n-2}}\) are as in \cref{prop:TensorPrimeFactor}
+        \State Permute inputs \(\bm{u}_0 = \bm{P} \bm{u}\), \(\bm{v}_0 = \bm{P} \bm{v}\)
+        \For {\(i \gets 1 \text{ to } n-1\)}
+            \State Permute arguments 
+            \[\bm{u}_i^{(1)} = \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right) \bm{u}_{i-1}, \quad \bm{v}_i^{(1)} = \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right) \bm{v}_{i-1}\]
+
+            where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
+            \State Break \(\bm{u}_i^{(1)}, \bm{v}_i^{(1)}\) into \(q_i\) blocks. Compute the block fourier transform
+            \[\bm{u}_i^{(2)} = \left(\bm{V}_{q_i} \otimes \bm{I}_{N / q_i}\right) \bm{u}_i^{(1)}, \quad \bm{v}_i^{(2)} = \left(\bm{V}_{q_i} \otimes \bm{I}_{N / q_i}\right) \bm{v}_i^{(1)}\]
+
+            \(\bm{V}_{q_i}\) is obtained from \(\zeta_N\) and factorization \(M_{i-1} = q_i M_i\) as in \cref{prop:GoodThomasDecomp}
+            \State Again permute
+            \[\bm{u}_i = \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \bm{u}_i^{(2)}, \quad \bm{v}_i = \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \bm{v}_i^{(2)}\]
+
+            where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
+        \EndFor
+        \State Parse
+        \begin{align*}
+            \bm{u}_{n-1} &= (\bm{u}_{n-1, 0} \parallel \ldots \parallel \bm{u}_{n-1, N_{n-1}-1})^{\top} \\
+            \bm{v}_{n-1} &= (\bm{v}_{n-1, 0} \parallel \ldots \parallel \bm{v}_{n-1, N_{n-1}-1})^{\top}
+        \end{align*}
+        into \(N_{n-1}\) consecutive blocks, each of size \(q_n^e\)
+        \For {\(i \gets 0 \text{ to } N_{n-1} - 1\)}
+            \State Let \(\bm{H}_i\) represent the circulant matrix whose first column is \(\bm{u}_{n-1, i}\)
+            \State Calculate
+            \[\bm{w}_{n-1, i} = \text{GenCircMatMult}(\bm{H}_i, \bm{v}_{n-1, i}, 1, q_n^e)\]
+
+            using \cref{alg:Mult2} \Comment{\(\bm{w}_{n-1, i} = \bm{u}_{n-1, i} \circledast \bm{v}_{n-1, i}\)}
+        \EndFor
+        \State Combine \(\bm{w}_{n-1} = (\bm{w}_{n-1, 0} \parallel \ldots \parallel \bm{w}_{n-1, N_{n-1} - 1})^{\top}\)
+        \For {\(i \gets n-1 \text{ down to } 2\)}
+            \State Permute \(\bm{w}_i^{(1)} = \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right) \bm{w}_i\), where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
+            \State Break \(\bm{w}_i^{(1)}\) into \(q_i\) blocks. Compute the block inverse fourier transform
+            \[\bm{w}_i^{(2)} = \left(\bm{V}_{q_i}^{-1} \otimes \bm{I}_{N/q_i}\right) \bm{w}_i^{(1)}\]
+
+            \(\bm{V}_{q_i}\) is obtained from \(\zeta_N\) and factorization \(M_{i-1} = q_i M_i\) as in \cref{prop:GoodThomasDecomp}
+            \State Permute again \(\bm{w}_{i-1} = \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \bm{w}_i^{(2)}\), where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
+        \EndFor
+        \State {\bf Return} \(\bm{w} = \bm{P}^{-1} \bm{w}_0\), where \(\bm{P}\) is as in line 1
     \end{algorithmic}
 \end{algorithm}

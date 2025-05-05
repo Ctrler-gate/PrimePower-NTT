@@ -150,13 +150,13 @@ Fortunately, there is a way to only lift the primitive polynomial \(f(x)\) witho
 \end{proof}
 \else
 \begin{proof}
-    The proof uses some p-adic theory and notations. We refer the reader to \cref{proof:LiftPrimOnly} in the appendix for a detailed proof.
+    The basic idea is to consider an extension field of the p-adic rationals \(\mathcal{Q}_p\) and use some p-adic calculation to verify that all properties above hold. We refer the reader to \cref{proof:LiftPrimOnly} in the appendix for a detailed proof of \cref{prop:LiftPrimOnly}.
 \end{proof}
 \fi
 
 Similar to GCD operations, we can in fact calculate the lifting using operations over the ground ring \(\Z\). This can be done with polynomial resultants.
 \begin{definition}{(Univariate Resultant \cite{MISC:WikiResultant})} \label{def:Resultant}
-    Let \(f(x) = a_0 + a_1 x + \ldots + a_n x^n\), \(g(x) = b_0 + b_1 x + \ldots + b_m x^m\) where \(a_n, b_m \neq 0\). The resultant of \(f, g\) is the determinant of the \((m+n)\times(m+n)\) Silvester matrix:
+    Let \(f(x) = a_0 + a_1 x + \ldots + a_n x^n\), \(g(x) = b_0 + b_1 x + \ldots + b_m x^m\) where \(a_n, b_m \neq 0\). The resultant of \(f, g\) is the determinant of the \((m+n)\times(m+n)\) Sylvester matrix:
     \[\mathsf{Res}(f, g) \coloneq \det
         \begin{pmatrix}
             a_0 & a_1 & \cdots & a_n & 0 & \cdots & 0 \\
