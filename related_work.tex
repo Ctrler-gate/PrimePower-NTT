@@ -1,3 +1,14 @@
 %!TEX root = main.tex
 \section{Related Works}
-\ToDo
+Classical Fast Fourier Transform (FFT) method was discovered by Gau{\ss}, and later rediscovered and popularized by the seminal Cooley-Tukey algorithm \cite{JSTOR:Cooley65,IEEE:Cooley67}, which uses a divide-and-conquer strategy to reduce the computational complexity from  \(O(N^2)\) to \(O(N \log N)\). Subsequently, the Bluestein FFT algorithm \cite{IEEE:Bluestein70} allows efficient Fourier transforms for arbitrary lengths. In a similar vei, the Mixed Radix FFT \cite{PNCC:ASCJ74} further supports  factorization of input length into arbitrary composite bases.
+
+The analogue of FFT in the realm of modular arithmetic, which is canonically known as Number Theoretic Transform(NTT), operates over fields or rings. Some well known algorithms in this realm are the Nussbaumer transform algorithm \cite{IEEE:NussHen80}, Schoenhage-Strassen algorithm \cite{COMP:ShoeStra71}. Victor Shoup, for example, introduced the concept of Multimodal-NTT \cite{JSC:Shoup95} to support efficient modular operations.
+
+The idea of Multimodal-NTT is to combine Chinese remainder theorem with NTT. To compute the circular convolution of 2 integer sequences, suppose the input length \(N\) is a power of 2 and all components of the inputs are nonnegative integers no greater than \(M\). Then each component of the result is upper bounded by \(M^2 N\). Hence we can find a set of distinct primes \(p_1, p_2, \ldots, p_2\) such that
+\begin{itemize}
+    \item For each \(p_i\), \(\Z_{p_i}\) contains a primitive \(N\textsuperscript{th}\) root of unity
+    \item \(\prod_{i=1}^{n} p_i \ge M^2 N\)
+\end{itemize}
+We can use the classical NTT algorithm to respecively compute the circular convolution \(\bmod \  p_1, \bmod \  p_2, \ldots , \bmod \  p_n\) and obtain the final result \(\bmod \bmod \  \prod p_i\) by applying Chinese remainder theorem to each component.
+
+Several works also explored generalizations of NTT to more complex algebraic structures. In particular, Martens and Vanwormhoudt \cite{IEEE:MartVan83} investigated the use of conjugate symmetry in NTTs over regular integer rings. Al Badawi et al. \cite{FICC:AAVBA19} introduced a modified discrete Galois transform tailored for efficient polynomial multiplication in hardware implementations. We hope our work can provide a new incentive for research in this direction.

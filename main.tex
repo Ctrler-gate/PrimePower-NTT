@@ -5,7 +5,7 @@
     \usepackage{geometry}
     \geometry{
         a4paper,         % or letterpaper
-        textwidth=16.5cm,  % llncs has 12.2cm
+        textwidth=16cm,  % llncs has 12.2cm
         textheight=24cm, % llncs has 19.3cm
         hratio=1:1,      % horizontally centered
         vratio=2:3,      % not vertically centered
@@ -19,6 +19,7 @@
 
 % Packages and macros----------------------------------------------------------------------
 \usepackage[T1]{fontenc}
+\usepackage{setspace}
 \usepackage{appendix}
 \usepackage{url}
 \usepackage[dvipsnames]{xcolor}
@@ -53,6 +54,8 @@
 
 \ifFullVersion
     % Meta Info
+    \onehalfspacing
+    
     \title{Perspectives of Convolution and Number Theoretic Transform over Prime Power Moduli}
     \author{Yimeng He \inst{1}}
     \authorrunning{Y. He et al.}

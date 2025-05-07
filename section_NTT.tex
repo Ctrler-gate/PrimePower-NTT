@@ -300,7 +300,7 @@ The following proposition describes the main idea of Agrawal Cooley algorithm. W
         \Require 2 length \(N\) sequences \(\bm{u}, \bm{v}\)
         \Ensure Their circular convolution product \(\bm{w} = \bm{u} \circledast \bm{v}\)
         \State Break \(N = N_1 N_2\) into 2 coprime factors. Find the CRT basis \(E_1, E_2\) and stride permutation matrix \(\bm{P}\) as in \cref{prop:GoodThomasDecomp}.
-        \State Permute the inputs \(\bm{u}_1 = \bm{P} \bm{u}\), \(\bm{v}_1 = \bm{P} \bm{v}\)
+        \State Compute permutations \(\bm{u}_1 = \bm{P} \bm{u}\), \(\bm{v}_1 = \bm{P} \bm{v}\)
         \State Calculate the block fourier transforms:
         \[ \bm{u}_2 = \left(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\right) \bm{u}_1, \qquad \bm{v}_2 = \left(\bm{V}_{N_1} \otimes \bm{I}_{N_2}\right) \bm{v}_1\] 
         \Comment{This step can be recursively computed if we can break up \(N_1\) to coprime factors}
@@ -426,10 +426,10 @@ Finally, \cref{alg:PrimePowerConvolution} shows one way to instantiate the combi
     \begin{algorithmic}[1]
         \Require Length \(N = q_1 \ldots q_{n-1} q_n^e\), where \(q_1\ldots q_n\) are distinct small primes; 2 length \(N\) sequences \(\bm{u}, \bm{v}\); a principal \(N\textsuperscript{th}\) root of unity \(\zeta_N\)
         \Ensure Circular convolution \(\bm{w} = \bm{u} \circledast \bm{v}\)
-        \State Compute the permutation
+        \State Determine the permutation matrix
         \[\bm{P} = \left(\bm{I}_{N_{n-1}} \otimes \bm{P}_{n-1}\right) \left(\bm{I}_{N_{n-3}} \otimes \bm{P}_{n-2}\right) \ldots \left(\bm{I}_{N_1} \otimes \bm{P}_2\right) \bm{P}_1\]
         where \(N_1, \ldots , N_{n-2}\) and \(\bm{P}_1, \ldots , \bm{P}_{N_{n-2}}\) are as in \cref{prop:TensorPrimeFactor}
-        \State Permute inputs \(\bm{u}_0 = \bm{P} \bm{u}\), \(\bm{v}_0 = \bm{P} \bm{v}\)
+        \State Calculate the permutations \(\bm{u}_0 = \bm{P} \bm{u}\), \(\bm{v}_0 = \bm{P} \bm{v}\)
         \For {\(i \gets 1 \text{ to } n-1\)}
             \State Permute arguments 
             \[\bm{u}_i^{(1)} = \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right) \bm{u}_{i-1}, \quad \bm{v}_i^{(1)} = \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right) \bm{v}_{i-1}\]
@@ -439,7 +439,7 @@ Finally, \cref{alg:PrimePowerConvolution} shows one way to instantiate the combi
             \[\bm{u}_i^{(2)} = \left(\bm{V}_{q_i} \otimes \bm{I}_{N / q_i}\right) \bm{u}_i^{(1)}, \quad \bm{v}_i^{(2)} = \left(\bm{V}_{q_i} \otimes \bm{I}_{N / q_i}\right) \bm{v}_i^{(1)}\]
 
             \(\bm{V}_{q_i}\) is obtained from \(\zeta_N\) and factorization \(M_{i-1} = q_i M_i\) as in \cref{prop:GoodThomasDecomp}
-            \State Again permute
+            \State Again calculate the permutations
             \[\bm{u}_i = \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \bm{u}_i^{(2)}, \quad \bm{v}_i = \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \bm{v}_i^{(2)}\]
 
             where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
@@ -459,12 +459,12 @@ Finally, \cref{alg:PrimePowerConvolution} shows one way to instantiate the combi
         \EndFor
         \State Combine \(\bm{w}_{n-1} = (\bm{w}_{n-1, 0} \parallel \ldots \parallel \bm{w}_{n-1, N_{n-1} - 1})^{\top}\)
         \For {\(i \gets n-1 \text{ down to } 2\)}
-            \State Permute \(\bm{w}_i^{(1)} = \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right) \bm{w}_i\), where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
+            \State Calculate the permutation \(\bm{w}_i^{(1)} = \left(\bm{Q}_i^{-1} \otimes \bm{I}_{M_i}\right) \bm{w}_i\), where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
             \State Break \(\bm{w}_i^{(1)}\) into \(q_i\) blocks. Compute the block inverse fourier transform
             \[\bm{w}_i^{(2)} = \left(\bm{V}_{q_i}^{-1} \otimes \bm{I}_{N/q_i}\right) \bm{w}_i^{(1)}\]
 
             \(\bm{V}_{q_i}\) is obtained from \(\zeta_N\) and factorization \(M_{i-1} = q_i M_i\) as in \cref{prop:GoodThomasDecomp}
-            \State Permute again \(\bm{w}_{i-1} = \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \bm{w}_i^{(2)}\), where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
+            \State Again calculate the permutation \(\bm{w}_{i-1} = \left(\bm{Q}_i \otimes \bm{I}_{M_i}\right) \bm{w}_i^{(2)}\), where \(\bm{Q}_i\) is as in \cref{cor:TensorPrimeInterchange}
         \EndFor
         \State {\bf Return} \(\bm{w} = \bm{P}^{-1} \bm{w}_0\), where \(\bm{P}\) is as in line 1
     \end{algorithmic}
