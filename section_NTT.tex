@@ -119,7 +119,7 @@ We now propose a generalized version of the algorithm described in \cite{ARXIV:R
     Then the multiplication of an \(f\)-circulant matrix \(\bm{A}\in \RingR^{N \times N}\) and a vector \(\bm{b} \in \RingR^N\) can be done with \(O(N \log N)\) ring operations using \cref{alg:Mult2}.
 \end{theorem}
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
     \caption{GenCircMatMult: Multiply an \(f\)-circulant matrix with a vector}\label{alg:Mult2}
     \begin{algorithmic}[1]
         \Require \(f\)-circulant matrix \(\bm{A}\), input vector \(\bm{b}\), \(f\) and length \(N\)
@@ -357,7 +357,7 @@ A more precise mathematical expression of the procedure above is given by \cref{
     Apply this operator to each circulant block within \(\bm{V}_{(n)}\), we obtain
     \begin{multline*}
         \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n} \otimes \bm{I}_{q_{n+1}^e}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n\right) \left(\bm{V}_{(n)} \bm{H} \bm{V}_{(n)}^{-1}\right) \\
-        \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n^{-1}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n}^{-1} \bm{I}_{q_{n+1}^e}\right)
+        \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{P}_n^{-1}\right) \left(\bm{I}_{q_1\ldots q_{n-1}} \otimes \bm{V}_{q_n}^{-1} \otimes \bm{I}_{q_{n+1}^e}\right)
     \end{multline*}
     is a block diagonal matrix, each block circulant of dimension \(q_{n+1}^e \times q_{n+1}^e\). But
     \begin{align*}
@@ -421,7 +421,7 @@ We briefly recall that the tensor product matrix \(\bm{V}_{q_1} \otimes \ldots \
 \end{proof}
 
 Finally, \cref{alg:PrimePowerConvolution} shows one way to instantiate the combined strategy. Correctness follows immediately from \cref{prop:TensorInterchange,cor:TensorPrimeInterchange}.
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
     \caption{Circular Convolution over prime power} \label{alg:PrimePowerConvolution}
     \begin{algorithmic}[1]
         \Require Length \(N = q_1 \ldots q_{n-1} q_n^e\), where \(q_1\ldots q_n\) are distinct small primes; 2 length \(N\) sequences \(\bm{u}, \bm{v}\); a principal \(N\textsuperscript{th}\) root of unity \(\zeta_N\)

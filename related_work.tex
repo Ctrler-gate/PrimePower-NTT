@@ -1,5 +1,5 @@
 %!TEX root = main.tex
-\section{Related Works}
+\section{Related Works} \label{section:relatedWork}
 Classical Fast Fourier Transform (FFT) method was discovered by Gau{\ss}, and later rediscovered and popularized by the seminal Cooley-Tukey algorithm \cite{JSTOR:Cooley65,IEEE:Cooley67}, which uses a divide-and-conquer strategy to reduce the computational complexity from  \(O(N^2)\) to \(O(N \log N)\). Subsequently, the Bluestein FFT algorithm \cite{IEEE:Bluestein70} allows efficient Fourier transforms for arbitrary lengths. In a similar vei, the Mixed Radix FFT \cite{PNCC:ASCJ74} further supports  factorization of input length into arbitrary composite bases.
 
 The analogue of FFT in the realm of modular arithmetic, which is canonically known as Number Theoretic Transform(NTT), operates over fields or rings. Some well known algorithms in this realm are the Nussbaumer transform algorithm \cite{IEEE:NussHen80}, Schoenhage-Strassen algorithm \cite{COMP:ShoeStra71}. Victor Shoup, for example, introduced the concept of Multimodal-NTT \cite{JSC:Shoup95} to support efficient modular operations.

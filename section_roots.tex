@@ -189,6 +189,10 @@ Similar to GCD operations, we can in fact calculate the lifting using operations
     Therefore, up to sign, \(g(x)\) is the monic polynomial whose roots are exactly the \(d\textsuperscript{th}\) power of the roots of \(f(x)\). \(g(x) \in \Z[x]\) since the coefficients of \(x - y^n, f(y)\) all belong to \(\Z[x]\)
 \end{proof}
 
+\begin{remark}
+    The Sagemath library contains a method called adams\_operator\_on\_roots that raises the roots of a polynomial to any degree. We could not identify the origin of this name, but upon inspection on the source code, we saw that the implementation computes the resultant polynomial as in \cref{prop:PowerP}.
+\end{remark}
+
 We can combine \cref{prop:LiftPrimOnly,prop:PowerP} to construct an efficient algorithm to lift primitive polynomials.
 
 \begin{algorithm}[h]

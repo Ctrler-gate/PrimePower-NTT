@@ -1,0 +1,213 @@
+%!TEX root = main.tex
+\section{Experiments and Conclusion}
+We implemented \cref{alg:PrimePowerConvolution} in Sagemath/Python \cite{OTHER:Stein05} environment. The parameters and configurations of \cref{alg:PrimePowerConvolution} is chosen in the following manner:
+
+{\bf \(p = 2, \text{ Length} = 2000\)}: We let \(N = 4095 = 13 * 7 * 5 * 3^2 = 2^{12} - 1\). We find a primitve degree \(12\) polynomial \(\bmod \  2\): \(f_{12}(x) = x^{12} + x^7 + x^6 + x^5 + x^3 + x + 1\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(2^8, 2^{16}, 2^{32}\). Use \(x\) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 2, \text{ Length} = 30000\)}: We let \(N = 69615 = 17 * 13 * 7 * 5 * 3^2 \mid 2^{24} - 1\). We find a primitve degree \(24\) polynomial \(\bmod \  2\): \(f_{24}(x) = x^{24} + x^{16} + x^{15} + x^{14} + x^{13} + x^{10} + x^9 + x^7 + x^5 + x^3 + 1\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(2^8, 2^{16}, 2^{32}\). Use \(x^{241} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 2, \text{ Length} = 100000\)}: We let \(N = 233415 = 19 * 13 * 7 * 5 * 3^3 \mid 2^{36} - 1\). We find a primitve degree \(36\) polynomial \(\bmod \  2\): \(f_{36}(x) = x^{36} + x^{23} + x^{22} + x^{20} + x^{19} + x^{17} + x^{14} + x^{13} + x^8 + x^6 + x^5 + x + 1\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(2^8, 2^{16}, 2^{32}\). Use \(x^{37*73*109} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 17, \text{ Length} = 1000\)}: We let \(N = 2880 = 5 * 3^2 * 2^6 \mid 17^{4} - 1\). We find a primitve degree \(4\) polynomial \(\bmod \  17\): \(f_{4}(x) = x^4 + 7x^2 + 10x + 3\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(17^2, 17^4, 17^8\). Use \(x^{29} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 17, \text{ Length} = 80000\)}: We let \(N = 2880 = 29 * 5 * 3^2 * 2^7 \mid 17^{8} - 1\). We find a primitve degree \(8\) polynomial \(\bmod \  17\): \(f_{8}(x) = x^8 + 11x^4 + 12x^3 + 6x + 3\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(17^2, 17^4, 17^8\). Use \(x^{41761} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 31, \text{ Length} = 900\)}: We let \(N = 1920 = 5 * 3 * 2^7 \mid 31^{4} - 1\). We find a primitve degree \(4\) polynomial \(\bmod \  31\): \(f_{4}(x) = x^4 + 3x^2 + 16x + 3\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(31^2, 31^4, 31^8\). Use \(x^{13*37} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 31, \text{ Length} = 10000\)}: We let \(N = 24960 = 13 * 5 * 3 * 2^7 \mid 31^{4} - 1\). Use again the primitive degree \(4\) polynomial \(\bmod \  31\): \(f_{4}(x) = x^4 + 3x^2 + 16x + 3\) and \cref{alg:HenselLift} to lift the polynomial over prime powers \(31^2, 31^4, 31^8\). Use \(x^{37} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+We compare our implementation with 3 other methods.
+\begin{itemize}
+    \item \emph{The Direct Method}: Our base line method is to represent circular as polynomial multiplication \(\pmod{p^m, x^N - 1}\). This is very similar to directly doing a matrix vector product where the matrix is circulant. We use Sagemath's generic engine to implement the operations and turn off all optimizations.
+    \item \emph{The Multimodular NTT Method} We use the Multimodular NTT method briefly introduced in \cref{section:relatedWork}. We use Sympy's ntt and intt method to calculate the Classical NTT and finally Sagemath's CRT vector method to compute the Chinese remainder isomorphism.
+    \item \emph{The Flint Method} This is similar to the Direct Method, but now we turn on Sagemath's Flint engine to implement polynomial arithmetics. We let Flint \cite{OTHER:FLINT} handle various optimizations when doing multiplications.
+\end{itemize}
+
+\subsection{Result}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{2000} \ \) & \(\ \bm{30000} \ \) & \(\ \bm{100000} \ \) \\
+        \hline
+        Direct & 113 & 22247 & 239498 \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 509 & 22402 & 230037 \\
+        \hline
+        Multimodular-NTT & 44 & 908 & 4193 \\
+        \hline
+        Flint & 2.9 & 77 & 420 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(2^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod2_8}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{2000} \ \) & \(\ \bm{30000} \ \) & \(\ \bm{100000} \ \) \\
+        \hline
+        Direct & 331 & 64288 & 778338 \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 526 & 28775 & 337630 \\
+        \hline
+        Multimodular-NTT & 65 & 1340 & 6341 \\
+        \hline
+        Flint & 3 & 117 & 439 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(2^{16}\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod2_16}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{2000} \ \) & \(\ \bm{30000} \ \) & \(\quad \bm{100000} \quad \) \\
+        \hline
+        Direct & 608 & 133040 & 2633100 \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 972 & 64871 & 598649 \\
+        \hline
+        Multimodular-NTT & 112 & 2249 & 8314 \\
+        \hline
+        Flint & 6.3 & 139 & 666 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(2^{32}\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod2_32}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{1000} \ \) & \(\quad \bm{80000} \quad \) \\
+        \hline
+        Direct & 29 & 149945  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 299 & 27015 \\
+        \hline
+        Multimodular-NTT & 22 & 4166 \\
+        \hline
+        Flint & 2.8 & 243 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(17^2\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod17_2}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{1000} \ \) & \(\quad \bm{80000} \quad \) \\
+        \hline
+        Direct & 83 & 455928  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 304 & 29573 \\
+        \hline
+        Multimodular-NTT & 43 & 6527 \\
+        \hline
+        Flint & 1.6 & 377 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(17^4\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod17_4}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{1000} \ \) & \(\quad \bm{80000} \quad \) \\
+        \hline
+        Direct & 141 & 1231909  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 374 & 49495 \\
+        \hline
+        Multimodular-NTT & 66 & 8520 \\
+        \hline
+        Flint & 3.7 & 564 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(17^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod17_8}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{900} \ \) & \(\quad \bm{10000} \quad \) \\
+        \hline
+        Direct & 69 & 7262  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 181 & 3162 \\
+        \hline
+        Multimodular-NTT & 32 & 662 \\
+        \hline
+        Flint & 1.3 & 41.6 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(31^2\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod31_2}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{900} \ \) & \(\quad \bm{10000} \quad \) \\
+        \hline
+        Direct & 77 & 7206  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 190 & 3386 \\
+        \hline
+        Multimodular-NTT & 43 & 865 \\
+        \hline
+        Flint & 4.2 & 47 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(31^4\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod31_4}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{900} \ \) & \(\quad \bm{10000} \quad \) \\
+        \hline
+        Direct & 116 & 12588  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 244 & 4312 \\
+        \hline
+        Multimodular-NTT & 66 & 1302 \\
+        \hline
+        Flint & 4.8 & 41 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(31^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod31_8}
+\end{table}
+
+\subsection{Conclusion}
+On one hand, experimental data demonstrate that \cref{alg:PrimePowerConvolution} performs better than the base-line \(O(N^2)\) method. This result confirms the feasibility of our strategy and gives an empirical indication that our method has asymptotic complexity \(O(N \log N)\).
+
+On the otherhand, the data show that \cref{alg:PrimePowerConvolution} performs consistenly worse than other optimization strategies. We summarize some of the reasons of its inefficiency:
+\begin{itemize}
+    \item We use modular polynomial multiplication while other optimizations use integer arithmetic throughout the NTT computations. Hence our method will take up more space and requires much longer time to do one basic multiplication.
+    \item Most optimization strategies employ radix-2 Cooley-Tuckey algorithm while we adopt a mixed radix approach. It is known that mixed radix FFT is concretely less efficient than pure radix-2 FFT.
+    \item \Cref{alg:PrimePowerConvolution} is written in pure python with Sagemath library while some optimizations are implemented in C/C++ code behind the python interface. Python overhead could account for some of our inefficiencies.
+\end{itemize}
+
+\paragraph{Potential Benefits and room for improvements}
+When the modulus is a prime power, we initially hope to leverage the modular structure of the underlying ring and avoid using Chinese remainder theorem, thereby avoid doing NTT multiple times under different prime modulus. It seems that Item 1 and 2 in the above consideration more than offset the costs of doing NTT multiple times. 
+
+One room for improvements may come from using large prime \(p\) and very small degree primitive polynomials. The difference between the time it takes to multiply 2 numbers \(\pmod{p^m}\) and the time it takes to multiply small degree polynomials \(\pmod{p^m, F(x)}\) might not be very large. In this case we may gain some efficiency by reducing the number of NTT we need to perform.
+
+Another room for improvement would come from optimizing the computation of block-fourier transform of small dimension, in other words, the computation of matrix vector product \((\bm{V}_p \otimes \bm{I}_{M}) \bm{v}\) where \(\bm{V}_p\) is the fourier (Vandermonde) matrix of a small prime \(p\) and \(M\) the block size. It is the bottleneck of Good-Thomas Prime Factorization computation so our method could benefit from any improvements in the block-wise fourier computation. More generally, a better FFT-style algorithm that doesn't use additional roots of unity will likely benefit our approach.
