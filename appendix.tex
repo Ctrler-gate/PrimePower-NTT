@@ -1,5 +1,5 @@
 %!TEX root=main.tex
-\clearpage\section*{Appendix}
+\clearpage\section{Appendix}
 \paragraph{\bf Proof of Claim in \cref{prop:LiftedPrimPoly}}
 \(\exists h(x):\: (x^k - 1)h(x) \equiv 1 \pmod{p^m, f_m(x)}\)
 \begin{ext_proof}\label{proof:LiftedPrimPoly}
@@ -109,3 +109,128 @@
     \end{align*}
     where \(N_{n-1} = q_1 q_2 \ldots q_n\) and \(Q_n = q_n q_{n+1}^e\). In addition, we use the mix product property of tensor products to move around and combine the components in order to obtain the second last equality. This proves the induction step.
 \end{ext_proof}
+
+\subsection{More Experimental Setups and Results} \label{subsection:more_experiments}
+{\bf \(p = 17, \text{ Length} = 1000\)}: We let \(N = 2880 = 5 * 3^2 * 2^6 \mid 17^{4} - 1\). We find a primitve degree \(4\) polynomial \(\bmod \  17\): \(f_{4}(x) = x^4 + 7x^2 + 10x + 3\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(17^2, 17^4, 17^8\). Use \(x^{29} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 17, \text{ Length} = 80000\)}: We let \(N = 2880 = 29 * 5 * 3^2 * 2^7 \mid 17^{8} - 1\). We find a primitve degree \(8\) polynomial \(\bmod \  17\): \(f_{8}(x) = x^8 + 11x^4 + 12x^3 + 6x + 3\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(17^2, 17^4, 17^8\). Use \(x^{41761} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 31, \text{ Length} = 900\)}: We let \(N = 1920 = 5 * 3 * 2^7 \mid 31^{4} - 1\). We find a primitve degree \(4\) polynomial \(\bmod \  31\): \(f_{4}(x) = x^4 + 3x^2 + 16x + 3\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(31^2, 31^4, 31^8\). Use \(x^{13*37} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+{\bf \(p = 31, \text{ Length} = 10000\)}: We let \(N = 24960 = 13 * 5 * 3 * 2^7 \mid 31^{4} - 1\). Use again the primitive degree \(4\) polynomial \(\bmod \  31\): \(f_{4}(x) = x^4 + 3x^2 + 16x + 3\) and \cref{alg:HenselLift} to lift the polynomial over prime powers \(31^2, 31^4, 31^8\). Use \(x^{37} \) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
+
+\paragraph{\bf Results} See \cref{tab:mod17_2_a,tab:mod17_4_a,tab:mod17_8_a,tab:mod31_2_a,tab:mod31_4_a,tab:mod31_8_a}.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{1000} \ \) & \(\quad \bm{80000} \quad \) \\
+        \hline
+        Direct & 29 & 149945  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 299 & 27015 \\
+        \hline
+        Multimodular-NTT & 22 & 4166 \\
+        \hline
+        Flint & 2.8 & 243 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(17^2\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod17_2_a}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{1000} \ \) & \(\quad \bm{80000} \quad \) \\
+        \hline
+        Direct & 83 & 455928  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 304 & 29573 \\
+        \hline
+        Multimodular-NTT & 43 & 6527 \\
+        \hline
+        Flint & 1.6 & 377 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(17^4\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod17_4_a}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{1000} \ \) & \(\quad \bm{80000} \quad \) \\
+        \hline
+        Direct & 141 & 1231909  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 374 & 49495 \\
+        \hline
+        Multimodular-NTT & 66 & 8520 \\
+        \hline
+        Flint & 3.7 & 564 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(17^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod17_8_a}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{900} \ \) & \(\quad \bm{10000} \quad \) \\
+        \hline
+        Direct & 69 & 7262  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 181 & 3162 \\
+        \hline
+        Multimodular-NTT & 32 & 662 \\
+        \hline
+        Flint & 1.3 & 41.6 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(31^2\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod31_2_a}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{900} \ \) & \(\quad \bm{10000} \quad \) \\
+        \hline
+        Direct & 77 & 7206  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 190 & 3386 \\
+        \hline
+        Multimodular-NTT & 43 & 865 \\
+        \hline
+        Flint & 4.2 & 47 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(31^4\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod31_4_a}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        {\bf Method/Length} & \(\ \bm{900} \ \) & \(\quad \bm{10000} \quad \) \\
+        \hline
+        Direct & 116 & 12588  \\
+        \hline
+        \Cref{alg:PrimePowerConvolution} & 244 & 4312 \\
+        \hline
+        Multimodular-NTT & 66 & 1302 \\
+        \hline
+        Flint & 4.8 & 41 \\
+        \hline
+    \end{tabular}
+    \caption{Average time in ms for convolution when modulus is \(31^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
+    \label{tab:mod31_8_a}
+\end{table}

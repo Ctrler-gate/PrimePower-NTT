@@ -190,7 +190,7 @@ Similar to GCD operations, we can in fact calculate the lifting using operations
 \end{proof}
 
 \begin{remark}
-    The Sagemath library contains a method called adams\_operator\_on\_roots that raises the roots of a polynomial to any degree. We could not identify the origin of this name, but upon inspection on the source code, we saw that the implementation computes the resultant polynomial as in \cref{prop:PowerP}.
+    The Sagemath library contains a method called adams\_operator\_on\_roots. When given a polynomial and an exponent \(d\), this method produces another polynomial whose roots are the \(d\textsuperscript{th}\) powers of roots of the given polynomial. The source code implementation turns out to be exactly the Resultant computation as in \cref{prop:PowerP}.
 \end{remark}
 
 We can combine \cref{prop:LiftPrimOnly,prop:PowerP} to construct an efficient algorithm to lift primitive polynomials.

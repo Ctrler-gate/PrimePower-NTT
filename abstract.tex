@@ -1,5 +1,6 @@
 %!TEX root = main.tex
 \begin{abstract}
-    Abstract to be done. \ToRef{}
-    %\keywords{NTT \and Convolution \and Galois Ring}
+    This paper investigates the problem of performing efficient circular convolution over prime power moduli ring \(\Z_{p^m}\), a setting not well supported by classical Number Theoretic Transform techniques. We propose an approach that adapts NTT directly to prime power moduli, leveraging roots of unity in Galois rings and tailored fast Fourier transform strategies. Specifically, we construct principal roots of unity using Hensel-lifted primitive polynomials and select suitable algorithms for efficient NTT computation under both prime power and composite-length constraints. Our method combines prime power recursion and Good-Thomas prime factorization to handle general smooth lengths. While theoretically achieving quasi-linear time complexity, our proof-of-concept implementation shows the method currently lags behind state-of-the-art techniques in practical efficiency. Nonetheless, this work could provide some insights for modulus-aware NTT strategies, with potential applications in cryptography, coding theory, and signal processing.
+
+    \keywords{NTT \and Convolution \and Galois Ring}
 \end{abstract}
