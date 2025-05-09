@@ -1,6 +1,6 @@
 %!TEX root = main.tex
 \section{Experiments and Conclusion}
-We implemented \cref{alg:PrimePowerConvolution} in Sagemath/Python \cite{OTHER:Stein05} environment. The parameters and configurations of \cref{alg:PrimePowerConvolution} is chosen in the following manner:
+We implemented \cref{alg:PrimePowerConvolution} in Sagemath/Python \cite{OTHER:Stein05} environment~\footnote{See \url{https://github.com/Ctrler-gate/PrimePower-NTT}}. The parameters and configurations of \cref{alg:PrimePowerConvolution} is chosen in the following manner:
 
 {\bf \(p = 2, \text{ Length} = 2000\)}: We let \(N = 4095 = 13 * 7 * 5 * 3^2 = 2^{12} - 1\). We find a primitve degree \(12\) polynomial \(\bmod \  2\): \(f_{12}(x) = x^{12} + x^7 + x^6 + x^5 + x^3 + x + 1\) and use \cref{alg:HenselLift} to lift the polynomial over prime powers \(2^8, 2^{16}, 2^{32}\). Use \(x\) as a principal \(N\textsuperscript{th}\) root of unity and finally employ \cref{alg:PrimePowerConvolution} and \cref{alg:Mult2}.
 
