@@ -1,2 +1,2 @@
 # PrimePower-NTT
-Latex and code for paper "Perdspectives of convolution and NTT on prime power moduli"
+Latex and code for paper *Perdspectives of convolution and Number Theoretic Transform over prime power moduli*
