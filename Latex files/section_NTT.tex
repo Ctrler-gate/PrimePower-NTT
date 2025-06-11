@@ -38,7 +38,7 @@ We first present the simple and elegant method described in \cite{ARXIV:Rosowski
     \end{itemize}
     Then the multiplication of an \(f\)-circulant matrix \(\bm{A}\in \RingR^{N \times N}\) and a vector \(\bm{b} \in \RingR^N\) can be done with \(O(N \log N)\) ring operations using \cref{alg:Mult1}.
 \end{theorem}
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
     \caption{CircMatMult: Multiply an \(f\)-circulant matrix with a vector}\label{alg:Mult1}
     \begin{algorithmic}[1]
         \Require \(f\)-circulant matrix \(\bm{A}\), input vector \(\bm{b}\), \(f\) and length \(N\)
@@ -294,7 +294,7 @@ The following proposition describes the main idea of Agrawal Cooley algorithm. W
 \end{proof}
 
 \Cref{{alg:GoodThomas}} instantiates the Good-Thomas Prime Factorization strategy. The correctness follows directly from \cref{prop:AgrawalCooley}.
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
     \caption{Good-Thomas Prime Factorization}\label{alg:GoodThomas}
     \begin{algorithmic}[1]
         \Require 2 length \(N\) sequences \(\bm{u}, \bm{v}\)

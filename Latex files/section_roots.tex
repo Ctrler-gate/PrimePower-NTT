@@ -91,7 +91,7 @@ We would like to find analogues of primitive polynomials over the ring \(\Z_{p^m
     \noindent\emph{proof of Claim.} \quad Since \(0 < k < N\), \(x^k - 1 \pmod{p, f(x)}\) is nonzero and has a multiplicative inverse \(h_1(x)\), i.e., \((x^k - 1)h_1(x) \equiv 1 \pmod{p, f_m(x)}\) (recall that \(\Z[x]/(p, f(x)) = \Z[x]/(p, f_m(x))\) is a field). We are going to lift the inverse \(\bmod \  p\) to one \(\bmod \  p^m\). To do so it is most convenient to employ a technique known as Newton-Raphson division~\cite{MISC:WikiNewton}
 
     \smallskip
-    \noindent{\bf Newton-Rhaphson division: }Let \(l > 0\). Suppose \(\exists h_l(x)\) s.t. \((x^k - 1)h_l(x) \equiv 1 \pmod{p^l, f_m(x)}\). Define
+    \noindent{\bf Newton-Raphson division: }Let \(l > 0\). Suppose \(\exists h_l(x)\) s.t. \((x^k - 1)h_l(x) \equiv 1 \pmod{p^l, f_m(x)}\). Define
     \[h_{l+1}(x) = 2 h_l(x) - (x^k - 1)h_l(x)^2\]
     Then \((x^k - 1)h_{l+1}(x) \equiv 1 \pmod{p^{l+1}, f_m(x)}\)
 
@@ -102,7 +102,7 @@ We would like to find analogues of primitive polynomials over the ring \(\Z_{p^m
         &2(x^k - 1)h_l(x) = 2 + 2p^l M_l(x) + f_m(x) N_l(x) \\
         \implies &(x^k - 1)h_{l+1}(x) = 1 + p^{l+1} M_{l+1}(x) + f_m(x) N_{l+1}(x)
     \end{align*}
-    for some polynomials \(M_{l+1}(x), N_{l+1}(x)\). Therefore we can use Newton-Rhaphson division to lift the inverse up to \(\bmod \  p^m\). This shows that \(x^k - 1\) and the claim is proven.
+    for some polynomials \(M_{l+1}(x), N_{l+1}(x)\). Therefore we can use Newton-Raphson division to lift the inverse up to \(\bmod \  p^m\). This shows that \(x^k - 1\) has an inverse \(\bmod (p^m, f_m(x))\) and the claim is proven.
 
     \medskip
     \else
@@ -195,7 +195,7 @@ Similar to GCD operations, we can in fact calculate the lifting using operations
 
 We can combine \cref{prop:LiftPrimOnly,prop:PowerP} to construct an efficient algorithm to lift primitive polynomials.
 
-\begin{algorithm}[h]
+\begin{algorithm}[ht]
 \caption{Hensel Lift Primitive Polynomial}\label{alg:HenselLift}
 \begin{algorithmic}[1]
     \Require Monic degree \(r\) primitive polynomial \(f(x) \in \Z_p[x]\) and exponent \(m\)

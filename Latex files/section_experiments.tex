@@ -30,9 +30,9 @@ We compare our implementation with 3 other methods.
 
 \subsection{Result}
 \ifFullVersion
-See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32,tab:mod17_2,tab:mod17_4,tab:mod17_8,tab:mod31_2,tab:mod31_4,tab:mod31_8} for comparison.
+See \cref{tab:mod208,tab:mod2016,tab:mod2032,tab:mod1702,tab:mod1704,tab:mod1708,tab:mod3102,tab:mod3104,tab:mod3108} for comparison.
 \else
-See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subsection:more_experiments} in the appendix for results when the prime \(p \ne 2\).
+See \cref{tab:mod208,tab:mod2016,tab:mod2032}. We refer the reader to \cref{subsection:more_experiments} in the appendix for results when the prime \(p \ne 2\).
 \fi
 \begin{table}[ht]
     \centering
@@ -50,7 +50,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(2^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod2_8}
+    \label{tab:mod208}
 \end{table}
 
 \begin{table}[ht]
@@ -69,7 +69,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(2^{16}\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod2_16}
+    \label{tab:mod2016}
 \end{table}
 
 \begin{table}[ht]
@@ -88,7 +88,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(2^{32}\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod2_32}
+    \label{tab:mod2032}
 \end{table}
 
 \ifFullVersion
@@ -108,7 +108,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(17^2\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod17_2}
+    \label{tab:mod1702}
 \end{table}
 
 \begin{table}[ht]
@@ -127,7 +127,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(17^4\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod17_4}
+    \label{tab:mod1704}
 \end{table}
 
 \begin{table}[ht]
@@ -146,7 +146,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(17^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod17_8}
+    \label{tab:mod1708}
 \end{table}
 
 \begin{table}[ht]
@@ -165,7 +165,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(31^2\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod31_2}
+    \label{tab:mod3102}
 \end{table}
 
 \begin{table}[ht]
@@ -184,7 +184,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(31^4\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod31_4}
+    \label{tab:mod3104}
 \end{table}
 
 \begin{table}[ht]
@@ -203,7 +203,7 @@ See \cref{tab:mod2_8,tab:mod2_16,tab:mod2_32}. We refer the reader to \cref{subs
         \hline
     \end{tabular}
     \caption{Average time in ms for convolution when modulus is \(31^8\). We use 50 test when Length is \(\le 5000\) and 20 test data when Length \(> 5000\) }
-    \label{tab:mod31_8}
+    \label{tab:mod3108}
 \end{table}
 \else
 \fi
